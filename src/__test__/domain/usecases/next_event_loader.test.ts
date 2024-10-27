@@ -32,10 +32,13 @@ class LoadNextEventRepositorySpy {
   groupId = '';
   callsCount = 0;
   output?: NextEvent;
+  error?: Error;
 
   async loadNextEvent({groupId}: {groupId: string}): Promise<NextEventEntity> {
     this.groupId = groupId;
     this.callsCount++;
+    if (this.error) throw this.error;
+
     return this.output!;
   }
 }
@@ -106,5 +109,16 @@ describe('NextEventLoader', () => {
     expect(event.players[1].confirmationDate).toBe(
       repo.output?.players[1].confirmationDate,
     );
+  });
+
+  it('should rethrow if repository throws an error', async () => {
+    const {sut, repo} = makeSut();
+    const error = new Error('any error');
+    repo.error = error;
+    const promise = sut.execute({
+      groupId: faker.number.int({max: 50000}).toString(),
+    });
+
+    expect(promise).rejects.toThrow(error);
   });
 });
