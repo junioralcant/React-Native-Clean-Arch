@@ -1,17 +1,17 @@
 import {expect, it, describe, beforeEach} from '@jest/globals';
 import {faker} from '@faker-js/faker';
-import {NextEventPlayer} from '../../../domain/entities/next_event_player';
+import {NextEventPlayerEntity} from '../../../domain/entities/next_event_player';
 
 type NextEvent = {
   groupName: string;
   date: Date;
-  players: NextEventPlayer[];
+  players: NextEventPlayerEntity[];
 };
 
 class NextEventEntity {
   groupName: string;
   date: Date;
-  players: NextEventPlayer[] = [];
+  players: NextEventPlayerEntity[] = [];
 
   constructor({groupName, date, players}: NextEvent) {
     this.groupName = groupName;
@@ -21,14 +21,14 @@ class NextEventEntity {
 }
 
 class NextEventLoaderUseCase {
-  constructor(readonly repo: LoadNextEventRepository) {}
+  constructor(readonly repo: LoadNextEventRepositorySpy) {}
 
   async execute({groupId}: {groupId: string}): Promise<NextEventEntity> {
     return await this.repo.loadNextEvent({groupId});
   }
 }
 
-class LoadNextEventRepository {
+class LoadNextEventRepositorySpy {
   groupId = '';
   callsCount = 0;
   output?: NextEvent;
@@ -41,21 +41,21 @@ class LoadNextEventRepository {
 }
 
 function makeSut() {
-  const repo = new LoadNextEventRepository();
+  const repo = new LoadNextEventRepositorySpy();
   const sut = new NextEventLoaderUseCase(repo);
 
   repo.output = {
     groupName: 'any group name',
     date: new Date(),
     players: [
-      NextEventPlayer.create({
+      NextEventPlayerEntity.create({
         id: 'any id 1',
         name: 'any name 1',
         isConfirmed: true,
         confirmationDate: new Date(),
         photo: 'any photo 1',
       }),
-      NextEventPlayer.create({
+      NextEventPlayerEntity.create({
         id: 'any id 2',
         name: 'any name 2',
         isConfirmed: false,
