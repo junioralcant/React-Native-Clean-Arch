@@ -7,7 +7,7 @@ type CreateParams = {
   confirmationDate?: Date;
 };
 
-export class NextEventPlayer {
+export class NextEventPlayerEntity {
   id: string;
   name: string;
   initials: string;
@@ -49,9 +49,9 @@ export class NextEventPlayer {
     photo,
     position,
     confirmationDate,
-  }: CreateParams): NextEventPlayer {
-    const initials = NextEventPlayer.getInitials(name);
-    return new NextEventPlayer({
+  }: CreateParams): NextEventPlayerEntity {
+    const initials = NextEventPlayerEntity.getInitials(name);
+    return new NextEventPlayerEntity({
       id,
       name,
       isConfirmed,

@@ -1,11 +1,12 @@
 import {expect, it, describe} from '@jest/globals';
-import {NextEventPlayer} from '../../../domain/entities/next_event_player';
+import {NextEventPlayerEntity} from '../../../domain/entities/next_event_player';
 
 function initialsOf(name: string): string {
-  return NextEventPlayer.create({id: '', name, isConfirmed: true}).initials;
+  return NextEventPlayerEntity.create({id: '', name, isConfirmed: true})
+    .initials;
 }
 
-describe('NextEventPlayer initials generation', () => {
+describe('NextEventPlayerEntity initials generation', () => {
   it('should return the first letter of the first and last names', () => {
     expect(initialsOf('Junior Marques')).toBe('JM');
     expect(initialsOf('Pedro Murilo')).toBe('PM');
