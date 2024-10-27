@@ -6,14 +6,7 @@ import {
   loadNextEventParams,
   LoadNextEventRepository,
 } from '../../../domain/repository/load_next_repo';
-
-class NextEventLoaderUseCase {
-  constructor(readonly repo: LoadNextEventRepository) {}
-
-  async execute({groupId}: {groupId: string}): Promise<NextEventEntity> {
-    return await this.repo.loadNextEvent({groupId});
-  }
-}
+import {NextEventLoaderUseCase} from '../../../domain/usecases/next_envent_loader';
 
 class LoadNextEventRepositorySpy implements LoadNextEventRepository {
   groupId = '';
