@@ -1,24 +1,7 @@
 import {expect, it, describe, beforeEach} from '@jest/globals';
 import {faker} from '@faker-js/faker';
 import {NextEventPlayerEntity} from '../../../domain/entities/next_event_player';
-
-type NextEvent = {
-  groupName: string;
-  date: Date;
-  players: NextEventPlayerEntity[];
-};
-
-class NextEventEntity {
-  groupName: string;
-  date: Date;
-  players: NextEventPlayerEntity[] = [];
-
-  constructor({groupName, date, players}: NextEvent) {
-    this.groupName = groupName;
-    this.date = date;
-    this.players = players;
-  }
-}
+import {NextEventEntity} from '../../../domain/entities/next_event_';
 
 class NextEventLoaderUseCase {
   constructor(readonly repo: LoadNextEventRepositorySpy) {}
@@ -31,7 +14,7 @@ class NextEventLoaderUseCase {
 class LoadNextEventRepositorySpy {
   groupId = '';
   callsCount = 0;
-  output?: NextEvent;
+  output?: NextEventEntity;
   error?: Error;
 
   async loadNextEvent({groupId}: {groupId: string}): Promise<NextEventEntity> {
@@ -71,7 +54,7 @@ function makeSut() {
   return {sut, repo};
 }
 
-describe('NextEventLoader', () => {
+describe('NextEventLoaderUseCase', () => {
   it('should load event data from a repository', async () => {
     const groupId = faker.number.int({max: 50000}).toString();
     const {sut, repo} = makeSut();
