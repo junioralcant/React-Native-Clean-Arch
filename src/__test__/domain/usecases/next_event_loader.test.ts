@@ -2,22 +2,28 @@ import {expect, it, describe, beforeEach} from '@jest/globals';
 import {faker} from '@faker-js/faker';
 import {NextEventPlayerEntity} from '../../../domain/entities/next_event_player';
 import {NextEventEntity} from '../../../domain/entities/next_event_';
+import {
+  loadNextEventParams,
+  LoadNextEventRepository,
+} from '../../../domain/repository/load_next_repo';
 
 class NextEventLoaderUseCase {
-  constructor(readonly repo: LoadNextEventRepositorySpy) {}
+  constructor(readonly repo: LoadNextEventRepository) {}
 
   async execute({groupId}: {groupId: string}): Promise<NextEventEntity> {
     return await this.repo.loadNextEvent({groupId});
   }
 }
 
-class LoadNextEventRepositorySpy {
+class LoadNextEventRepositorySpy implements LoadNextEventRepository {
   groupId = '';
   callsCount = 0;
   output?: NextEventEntity;
   error?: Error;
 
-  async loadNextEvent({groupId}: {groupId: string}): Promise<NextEventEntity> {
+  async loadNextEvent({
+    groupId,
+  }: loadNextEventParams): Promise<NextEventEntity> {
     this.groupId = groupId;
     this.callsCount++;
     if (this.error) throw this.error;
