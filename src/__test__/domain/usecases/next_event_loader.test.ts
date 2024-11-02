@@ -1,5 +1,4 @@
-import {expect, it, describe, beforeEach} from '@jest/globals';
-import {faker} from '@faker-js/faker';
+import {expect, it, describe} from '@jest/globals';
 import {NextEventPlayerEntity} from '../../../domain/entities/next_event_player';
 import {NextEventEntity} from '../../../domain/entities/next_event_';
 import {
@@ -7,6 +6,7 @@ import {
   LoadNextEventRepository,
 } from '../../../domain/repository/load_next_repo';
 import {NextEventLoaderUseCase} from '../../../domain/usecases/next_envent_loader';
+import {anyString} from '../../helpers/fakes';
 
 class LoadNextEventRepositorySpy implements LoadNextEventRepository {
   groupId = '';
@@ -55,7 +55,7 @@ function makeSut() {
 
 describe('NextEventLoaderUseCase', () => {
   it('should load event data from a repository', async () => {
-    const groupId = faker.number.int({max: 50000}).toString();
+    const groupId = anyString();
     const {sut, repo} = makeSut();
 
     await sut.execute({groupId});
@@ -98,7 +98,7 @@ describe('NextEventLoaderUseCase', () => {
     const error = new Error('any error');
     repo.error = error;
     const promise = sut.execute({
-      groupId: faker.number.int({max: 50000}).toString(),
+      groupId: anyString(),
     });
 
     expect(promise).rejects.toThrow(error);
