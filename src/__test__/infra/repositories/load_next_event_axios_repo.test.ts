@@ -1,4 +1,4 @@
-import {expect, it, describe} from '@jest/globals';
+import {expect, it, describe, beforeEach} from '@jest/globals';
 
 import {
   loadNextEventParams,
@@ -38,23 +38,26 @@ class LoadNextEventRepositoryAxios implements LoadNextEventRepository {
 }
 
 describe('LoadNextEventRepositoryAxios', () => {
-  it('should request with correct method', async () => {
-    const httpClient = new HttpClientSpy();
-    const groupId = anyString();
-    const sut = new LoadNextEventRepositoryAxios(httpClient, '');
-    await sut.loadNextEvent({groupId});
+  let groupId: string;
+  let url: string;
+  let httpClient: HttpClientSpy;
+  let sut: LoadNextEventRepositoryAxios;
 
+  beforeEach(() => {
+    groupId = anyString();
+    url = `https://domain.com/api/groups/:groupId/next_events`;
+    httpClient = new HttpClientSpy();
+    sut = new LoadNextEventRepositoryAxios(httpClient, url);
+  });
+
+  it('should request with correct method', async () => {
+    await sut.loadNextEvent({groupId});
     expect(httpClient.method).toBe('get');
     expect(httpClient.callsCount).toBe(1);
   });
 
   it('should request with correct url', async () => {
-    const groupId = anyString();
-    const url = `https://domain.com/api/groups/:groupId/next_events`;
-    const httpClient = new HttpClientSpy();
-    const sut = new LoadNextEventRepositoryAxios(httpClient, url);
     await sut.loadNextEvent({groupId});
-
     expect(httpClient.url).toBe(
       `https://domain.com/api/groups/${groupId}/next_events`,
     );
