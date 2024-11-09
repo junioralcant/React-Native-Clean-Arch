@@ -8,15 +8,17 @@ import {NextEventEntity} from '../../../domain/entities/next_event_';
 import {anyString} from '../../helpers/fakes';
 
 interface IHttpClient<T = any> {
-  get(url: string): Promise<T>;
+  get(url: string, headers?: any): Promise<T>;
 }
 
 class HttpClientSpy implements IHttpClient {
   callsCount = 0;
   method = '';
   url = '';
+  headers: Record<string, string> = {};
 
-  async get(url: string): Promise<any> {
+  async get(url: string, headers?: any): Promise<any> {
+    this.headers = headers;
     this.method = 'get';
     this.url = url;
     this.callsCount++;
@@ -32,7 +34,11 @@ class LoadNextEventRepositoryAxios implements LoadNextEventRepository {
     groupId,
   }: loadNextEventParams): Promise<NextEventEntity> {
     const url = this.url.replace(':groupId', groupId);
-    await this.httpClient.get(url);
+    const headers = {
+      'content-type': 'application/json',
+      accept: 'application/json',
+    };
+    await this.httpClient.get(url, headers);
     return {} as NextEventEntity;
   }
 }
@@ -61,5 +67,11 @@ describe('LoadNextEventRepositoryAxios', () => {
     expect(httpClient.url).toBe(
       `https://domain.com/api/groups/${groupId}/next_events`,
     );
+  });
+
+  it('should request with correct headers', async () => {
+    await sut.loadNextEvent({groupId});
+    expect(httpClient?.headers['content-type']).toBe(`application/json`);
+    expect(httpClient?.headers['accept']).toBe(`application/json`);
   });
 });
