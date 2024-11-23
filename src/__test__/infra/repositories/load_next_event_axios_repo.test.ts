@@ -1,4 +1,4 @@
-import {expect, it, describe, beforeEach} from '@jest/globals';
+import {expect, it, describe, beforeEach, jest} from '@jest/globals';
 
 import {
   loadNextEventParams,
@@ -6,38 +6,28 @@ import {
 } from '../../../domain/repository/load_next_repo';
 import {NextEventEntity} from '../../../domain/entities/next_event_';
 import {anyString} from '../../helpers/fakes';
-import {ne} from '@faker-js/faker';
+import axios from 'axios';
 import {NextEventPlayerEntity} from '../../../domain/entities/next_event_player';
 
 export type HttpResponse<TData = any> = {
   data: TData;
 };
 
-interface IHttpClient<T = any> {
-  get(url: string, headers?: any): Promise<HttpResponse<T>>;
-}
-
-class HttpClientSpy implements IHttpClient {
-  callsCount = 0;
-  method = '';
-  url = '';
-  headers: Record<string, string> = {};
-  response = {};
-
-  async get(url: string, headers?: any): Promise<HttpResponse> {
-    this.headers = headers;
-    this.method = 'get';
-    this.url = url;
-    this.callsCount++;
-    return {data: this.response};
-  }
-}
+type NextEventEntityApi = {
+  date: string;
+  groupName: string;
+  players: {
+    id: string;
+    name: string;
+    isConfirmed: boolean;
+    photo: string;
+    position: string;
+    confirmationDate: string;
+  }[];
+};
 
 class LoadNextEventRepositoryAxios implements LoadNextEventRepository {
-  constructor(
-    private readonly httpClient: IHttpClient<NextEventEntity>,
-    private readonly url: string,
-  ) {}
+  constructor(private readonly url: string) {}
   async loadNextEvent({
     groupId,
   }: loadNextEventParams): Promise<NextEventEntity> {
@@ -46,9 +36,14 @@ class LoadNextEventRepositoryAxios implements LoadNextEventRepository {
       'content-type': 'application/json',
       accept: 'application/json',
     };
-    const {data: response} = await this.httpClient.get(url, headers);
+
+    const {data: response} = await axios.request<NextEventEntityApi>({
+      method: 'get',
+      url,
+      headers,
+    });
     return new NextEventEntity({
-      date: response.date,
+      date: new Date(response.date),
       groupName: response.groupName,
       players: response.players.map(player =>
         NextEventPlayerEntity.create({
@@ -57,7 +52,7 @@ class LoadNextEventRepositoryAxios implements LoadNextEventRepository {
           isConfirmed: player.isConfirmed,
           photo: player.photo,
           position: player.position,
-          confirmationDate: player?.confirmationDate,
+          confirmationDate: new Date(player.confirmationDate),
         }),
       ),
     });
@@ -67,58 +62,73 @@ class LoadNextEventRepositoryAxios implements LoadNextEventRepository {
 describe('LoadNextEventRepositoryAxios', () => {
   let groupId: string;
   let url: string;
-  let httpClient: HttpClientSpy;
   let sut: LoadNextEventRepositoryAxios;
+  let axiosMocked = {};
 
   beforeEach(() => {
     groupId = anyString();
     url = `https://domain.com/api/groups/:groupId/next_events`;
-    httpClient = new HttpClientSpy();
-    httpClient.response = {
-      date: '2024-01-01T10:30',
-      groupName: 'any_name',
-      players: [
-        {
-          id: 'id 1',
-          name: 'name 1',
-          isConfirmed: true,
-        },
-        {
-          id: 'id 2',
-          name: 'name 2',
-          isConfirmed: false,
-          position: 'position 2',
-          confirmationDate: '2024-01-01T10:30',
-          photo: 'photo 2',
-        },
-      ],
-    };
-    sut = new LoadNextEventRepositoryAxios(httpClient, url);
+    axiosMocked = jest.spyOn(axios, 'request').mockResolvedValueOnce({
+      data: {
+        date: '2024-01-01T10:30:00.000Z',
+        groupName: 'any_name',
+        players: [
+          {
+            id: 'id 1',
+            name: 'name 1',
+            isConfirmed: true,
+          },
+          {
+            id: 'id 2',
+            name: 'name 2',
+            isConfirmed: false,
+            position: 'position 2',
+            confirmationDate: '2024-01-01T10:30:00.000Z',
+            photo: 'photo 2',
+          },
+        ],
+      },
+    });
+    sut = new LoadNextEventRepositoryAxios(url);
   });
 
   it('should request with correct method', async () => {
     await sut.loadNextEvent({groupId});
-    expect(httpClient.method).toBe('get');
-    expect(httpClient.callsCount).toBe(1);
+    expect(axiosMocked).toHaveBeenCalledWith(
+      expect.objectContaining({
+        method: 'get',
+      }),
+    );
+    expect(axiosMocked).toBeCalledTimes(1);
   });
 
   it('should request with correct url', async () => {
     await sut.loadNextEvent({groupId});
-    expect(httpClient.url).toBe(
-      `https://domain.com/api/groups/${groupId}/next_events`,
+
+    expect(axiosMocked).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: `https://domain.com/api/groups/${groupId}/next_events`,
+      }),
     );
   });
 
   it('should request with correct headers', async () => {
     await sut.loadNextEvent({groupId});
-    expect(httpClient?.headers['content-type']).toBe(`application/json`);
-    expect(httpClient?.headers['accept']).toBe(`application/json`);
+
+    expect(axiosMocked).toHaveBeenCalledWith(
+      expect.objectContaining({
+        headers: {
+          'content-type': 'application/json',
+          accept: 'application/json',
+        },
+      }),
+    );
   });
 
   it('should request NextEvent on 200', async () => {
     const event = await sut.loadNextEvent({groupId});
     expect(event.groupName).toBe('any_name');
-    expect(event.date).toBe('2024-01-01T10:30');
+    expect(event.date).toEqual(new Date('2024-01-01T10:30:00.000Z'));
 
     expect(event.players[0].id).toBe('id 1');
     expect(event.players[0].name).toBe('name 1');
@@ -128,7 +138,9 @@ describe('LoadNextEventRepositoryAxios', () => {
     expect(event.players[1].name).toBe('name 2');
     expect(event.players[1].position).toBe('position 2');
     expect(event.players[1].photo).toBe('photo 2');
-    expect(event.players[1].confirmationDate).toBe('2024-01-01T10:30');
+    expect(event.players[1].confirmationDate).toEqual(
+      new Date('2024-01-01T10:30:00.000Z'),
+    );
 
     expect(event.players[1].isConfirmed).toBe(false);
   });
