@@ -5,6 +5,7 @@ type loadNextEventParams = {groupId: string};
 
 type GetParams = {
   url: string;
+  params: Record<string, string>;
 };
 
 interface HttpGetClient {
@@ -17,16 +18,18 @@ class LoadNextEventApiRepository {
     private readonly url: string,
   ) {}
   async loadNextEvent({groupId}: loadNextEventParams): Promise<void> {
-    this.httpClient.get({url: this.url});
+    this.httpClient.get({url: this.url, params: {groupId}});
   }
 }
 
 class HttpGetClientSpy implements HttpGetClient {
   url? = '';
   callsCount = 0;
+  params: Record<string, string> = {};
 
   async get(params: GetParams): Promise<void> {
     this.url = params.url;
+    this.params = params.params;
     this.callsCount++;
   }
 }
@@ -44,9 +47,10 @@ describe('LoadNextEventApiRepository', () => {
     sut = new LoadNextEventApiRepository(httpClient, url);
   });
 
-  it('should call HttpClient with correct URL', async () => {
+  it('should call HttpClient with correct URL and params', async () => {
     await sut.loadNextEvent({groupId});
     expect(httpClient.url).toBe(url);
+    expect(httpClient.params).toEqual({groupId});
     expect(httpClient.callsCount).toBe(1);
   });
 });
