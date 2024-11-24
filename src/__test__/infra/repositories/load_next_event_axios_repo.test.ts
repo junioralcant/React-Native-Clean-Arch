@@ -6,10 +6,22 @@ import {
 } from '../../../domain/repository/load_next_repo';
 import {NextEventEntity} from '../../../domain/entities/next_event_';
 import {anyString} from '../../helpers/fakes';
-import {ne} from '@faker-js/faker';
 import {NextEventPlayerEntity} from '../../../domain/entities/next_event_player';
 
+enum DomainErrorStatus {
+  unexpected = 400,
+}
+
+class UnexpectedError extends Error {
+  constructor() {
+    super();
+    this.name = 'UnexpectedError';
+    this.message = 'Unexpected error';
+  }
+}
+
 export type HttpResponse<TData = any> = {
+  statusCode: number;
   data: TData;
 };
 
@@ -23,13 +35,14 @@ class HttpClientSpy implements IHttpClient {
   url = '';
   headers: Record<string, string> = {};
   response = {};
+  statusCode = 200;
 
   async get(url: string, headers?: any): Promise<HttpResponse> {
     this.headers = headers;
     this.method = 'get';
     this.url = url;
     this.callsCount++;
-    return {data: this.response};
+    return {data: this.response, statusCode: this.statusCode};
   }
 }
 
@@ -46,11 +59,14 @@ class LoadNextEventRepositoryAxios implements LoadNextEventRepository {
       'content-type': 'application/json',
       accept: 'application/json',
     };
-    const {data: response} = await this.httpClient.get(url, headers);
+    const response = await this.httpClient.get(url, headers);
+    if (response.statusCode === DomainErrorStatus.unexpected) {
+      throw new UnexpectedError();
+    }
     return new NextEventEntity({
-      date: response.date,
-      groupName: response.groupName,
-      players: response.players.map(player =>
+      date: response.data.date,
+      groupName: response.data.groupName,
+      players: response.data.players.map(player =>
         NextEventPlayerEntity.create({
           id: player.id,
           name: player.name,
@@ -131,5 +147,13 @@ describe('LoadNextEventRepositoryAxios', () => {
     expect(event.players[1].confirmationDate).toBe('2024-01-01T10:30');
 
     expect(event.players[1].isConfirmed).toBe(false);
+  });
+
+  it('should throw UnexpectedError on status 400', async () => {
+    httpClient.statusCode = DomainErrorStatus.unexpected;
+
+    const response = sut.loadNextEvent({groupId});
+
+    expect(response).rejects.toThrow(new UnexpectedError());
   });
 });
