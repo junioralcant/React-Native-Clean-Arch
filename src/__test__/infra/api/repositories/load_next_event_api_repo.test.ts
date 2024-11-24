@@ -2,6 +2,7 @@ import {expect, it, describe, beforeEach} from '@jest/globals';
 import {anyString} from '../../../helpers/fakes';
 import {NextEventEntity} from '../../../../domain/entities/next_event_';
 import {NextEventPlayerEntity} from '../../../../domain/entities/next_event_player';
+import {ILoadNextEventRepository} from '../../../../domain/repository/load_next_repo';
 
 type loadNextEventParams = {groupId: string};
 
@@ -14,7 +15,7 @@ interface HttpGetClient {
   get(params: GetParams): Promise<any>;
 }
 
-class LoadNextEventApiRepository {
+class LoadNextEventApiRepository implements ILoadNextEventRepository {
   constructor(
     private readonly httpClient: HttpGetClient,
     private readonly url: string,
