@@ -7,6 +7,8 @@ import {
 import {NextEventEntity} from '../../../domain/entities/next_event_';
 import {anyString} from '../../helpers/fakes';
 import {NextEventPlayerEntity} from '../../../domain/entities/next_event_player';
+import {SessionExpiredError} from '../../../domain/erros/sesstion_expired_error';
+import {UnexpectedError} from '../../../domain/erros/unexpecte_error';
 
 enum StatusCode {
   Success = 200,
@@ -15,22 +17,6 @@ enum StatusCode {
   ForbiddenError = 403,
   NotFoundError = 404,
   ServerError = 500,
-}
-
-class UnexpectedError extends Error {
-  constructor() {
-    super();
-    this.name = 'UnexpectedError';
-    this.message = 'Unexpected error';
-  }
-}
-
-class SessionExpiredError extends Error {
-  constructor() {
-    super();
-    this.name = 'SessionExpiredError';
-    this.message = 'Session expired';
-  }
 }
 
 export type HttpResponse<TData = any> = {
