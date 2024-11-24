@@ -1,31 +1,13 @@
 import {expect, it, describe, beforeEach} from '@jest/globals';
 
-import {anyString} from '../../helpers/fakes';
-import {SessionExpiredError} from '../../../domain/erros/sesstion_expired_error';
-import {UnexpectedError} from '../../../domain/erros/unexpecte_error';
+import {anyString} from '../../../helpers/fakes';
+import {SessionExpiredError} from '../../../../domain/erros/sesstion_expired_error';
+import {UnexpectedError} from '../../../../domain/erros/unexpecte_error';
 import {
-  HttpResponse,
-  IHttpClient,
   LoadNextEventRepository,
   StatusCode,
-} from '../../../infra/api/repositories/load_next_event_repository';
-
-class HttpClientSpy implements IHttpClient {
-  callsCount = 0;
-  method = '';
-  url = '';
-  headers: Record<string, string> = {};
-  response = {};
-  statusCode = 200;
-
-  async get(url: string, headers?: any): Promise<HttpResponse> {
-    this.headers = headers;
-    this.method = 'get';
-    this.url = url;
-    this.callsCount++;
-    return {data: this.response, statusCode: this.statusCode};
-  }
-}
+} from '../../../../infra/api/repositories/load_next_event_repository';
+import {HttpClientSpy} from '../clients/http_client_spy';
 
 describe('LoadNextEventRepository', () => {
   let groupId: string;
