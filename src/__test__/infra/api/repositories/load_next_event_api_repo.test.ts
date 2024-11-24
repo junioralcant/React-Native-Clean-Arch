@@ -28,33 +28,47 @@ class LoadNextEventApiRepository implements ILoadNextEventRepository {
       params: {groupId},
     });
 
-    return new NextEventEntity({
-      date: response.date,
-      groupName: response.groupName,
-      players: response.players.map(player =>
-        NextEventPlayerEntity.create({
-          id: player.id,
-          name: player.name,
-          isConfirmed: player.isConfirmed,
-          photo: player.photo,
-          position: player.position,
-          confirmationDate: player?.confirmationDate,
-        }),
-      ),
-    });
+    return adapter.toNextEventEntity(response);
   }
 }
+
+function toNextEventEntity(response: any): NextEventEntity {
+  return new NextEventEntity({
+    date: response.date,
+    groupName: response.groupName,
+    players: response.players.map(toNextEventPlayerEntity),
+  });
+}
+
+function toNextEventPlayerEntity(
+  player: NextEventPlayerEntity,
+): NextEventPlayerEntity {
+  return NextEventPlayerEntity.create({
+    id: player.id,
+    name: player.name,
+    isConfirmed: player.isConfirmed,
+    photo: player.photo,
+    position: player.position,
+    confirmationDate: player?.confirmationDate,
+  });
+}
+
+const adapter = {
+  toNextEventEntity,
+};
 
 class HttpGetClientSpy implements HttpGetClient {
   url? = '';
   callsCount = 0;
   params: Record<string, string> = {};
   response: any = {};
+  error?: Error;
 
   async get(params: GetParams): Promise<any> {
     this.url = params.url;
     this.params = params.params;
     this.callsCount++;
+    if (this.error) throw this.error;
     return this.response;
   }
 }
@@ -114,5 +128,12 @@ describe('LoadNextEventApiRepository', () => {
     expect(event.players[1].confirmationDate).toBe('2024-01-01T10:30');
 
     expect(event.players[1].isConfirmed).toBe(false);
+  });
+
+  it('should rethrow on error', async () => {
+    const error = new Error('error');
+    httpClient.error = error;
+    const response = sut.loadNextEvent({groupId});
+    expect(response).rejects.toThrow(error);
   });
 });
