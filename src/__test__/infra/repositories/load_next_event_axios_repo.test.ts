@@ -68,16 +68,14 @@ class LoadNextEventRepositoryAxios implements LoadNextEventRepository {
       accept: 'application/json',
     };
     const response = await this.httpClient.get(url, headers);
-    if (response.statusCode === DomainErrorStatus.unexpected) {
-      throw new UnexpectedError();
-    } else if (response.statusCode === 403) {
-      throw new UnexpectedError();
-    } else if (response.statusCode === 404) {
-      throw new UnexpectedError();
-    } else if (response.statusCode === 500) {
-      throw new UnexpectedError();
-    } else if (response.statusCode === 401) {
-      throw new SessionExpiredError();
+
+    switch (response.statusCode) {
+      case 200:
+        break;
+      case 401:
+        throw new SessionExpiredError();
+      default:
+        throw new UnexpectedError();
     }
 
     return new NextEventEntity({
