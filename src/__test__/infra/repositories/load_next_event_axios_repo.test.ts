@@ -20,6 +20,14 @@ class UnexpectedError extends Error {
   }
 }
 
+class SessionExpiredError extends Error {
+  constructor() {
+    super();
+    this.name = 'SessionExpiredError';
+    this.message = 'Session expired';
+  }
+}
+
 export type HttpResponse<TData = any> = {
   statusCode: number;
   data: TData;
@@ -68,6 +76,8 @@ class LoadNextEventRepositoryAxios implements LoadNextEventRepository {
       throw new UnexpectedError();
     } else if (response.statusCode === 500) {
       throw new UnexpectedError();
+    } else if (response.statusCode === 401) {
+      throw new SessionExpiredError();
     }
 
     return new NextEventEntity({
@@ -160,6 +170,12 @@ describe('LoadNextEventRepositoryAxios', () => {
     httpClient.statusCode = DomainErrorStatus.unexpected;
     const response = sut.loadNextEvent({groupId});
     expect(response).rejects.toThrow(new UnexpectedError());
+  });
+
+  it('should throw SessionExpiredError on status 401', async () => {
+    httpClient.statusCode = 401;
+    const response = sut.loadNextEvent({groupId});
+    expect(response).rejects.toThrow(new SessionExpiredError());
   });
 
   it('should throw UnexpectedError on status 403', async () => {
