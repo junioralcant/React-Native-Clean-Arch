@@ -2,13 +2,13 @@ import {expect, it, describe} from '@jest/globals';
 import {NextEventPlayerEntity} from '../../../domain/entities/next_event_player';
 import {NextEventEntity} from '../../../domain/entities/next_event_';
 import {
+  ILoadNextEventRepository,
   loadNextEventParams,
-  LoadNextEventRepository,
 } from '../../../domain/repository/load_next_repo';
 import {NextEventLoaderUseCase} from '../../../domain/usecases/next_envent_loader';
 import {anyString} from '../../helpers/fakes';
 
-class LoadNextEventRepositorySpy implements LoadNextEventRepository {
+class LoadNextEventRepositorySpy implements ILoadNextEventRepository {
   groupId = '';
   callsCount = 0;
   output?: NextEventEntity;

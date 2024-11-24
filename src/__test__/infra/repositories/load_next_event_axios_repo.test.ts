@@ -1,8 +1,8 @@
 import {expect, it, describe, beforeEach} from '@jest/globals';
 
 import {
+  ILoadNextEventRepository,
   loadNextEventParams,
-  LoadNextEventRepository,
 } from '../../../domain/repository/load_next_repo';
 import {NextEventEntity} from '../../../domain/entities/next_event_';
 import {anyString} from '../../helpers/fakes';
@@ -59,7 +59,7 @@ class HttpClientSpy implements IHttpClient {
   }
 }
 
-class LoadNextEventRepositoryAxios implements LoadNextEventRepository {
+class LoadNextEventRepository implements ILoadNextEventRepository {
   constructor(
     private readonly httpClient: IHttpClient<NextEventEntity>,
     private readonly url: string,
@@ -100,11 +100,11 @@ class LoadNextEventRepositoryAxios implements LoadNextEventRepository {
   }
 }
 
-describe('LoadNextEventRepositoryAxios', () => {
+describe('LoadNextEventRepository', () => {
   let groupId: string;
   let url: string;
   let httpClient: HttpClientSpy;
-  let sut: LoadNextEventRepositoryAxios;
+  let sut: LoadNextEventRepository;
 
   beforeEach(() => {
     groupId = anyString();
@@ -129,7 +129,7 @@ describe('LoadNextEventRepositoryAxios', () => {
         },
       ],
     };
-    sut = new LoadNextEventRepositoryAxios(httpClient, url);
+    sut = new LoadNextEventRepository(httpClient, url);
   });
 
   it('should request with correct method', async () => {
