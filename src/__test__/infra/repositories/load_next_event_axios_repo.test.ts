@@ -8,8 +8,13 @@ import {NextEventEntity} from '../../../domain/entities/next_event_';
 import {anyString} from '../../helpers/fakes';
 import {NextEventPlayerEntity} from '../../../domain/entities/next_event_player';
 
-enum DomainErrorStatus {
-  unexpected = 400,
+enum StatusCode {
+  Success = 200,
+  BadRequestError = 400,
+  UnauthorizedError = 401,
+  ForbiddenError = 403,
+  NotFoundError = 404,
+  ServerError = 500,
 }
 
 class UnexpectedError extends Error {
@@ -70,9 +75,9 @@ class LoadNextEventRepositoryAxios implements LoadNextEventRepository {
     const response = await this.httpClient.get(url, headers);
 
     switch (response.statusCode) {
-      case 200:
+      case StatusCode.Success:
         break;
-      case 401:
+      case StatusCode.UnauthorizedError:
         throw new SessionExpiredError();
       default:
         throw new UnexpectedError();
@@ -165,31 +170,31 @@ describe('LoadNextEventRepositoryAxios', () => {
   });
 
   it('should throw UnexpectedError on status 400', async () => {
-    httpClient.statusCode = DomainErrorStatus.unexpected;
+    httpClient.statusCode = StatusCode.BadRequestError;
     const response = sut.loadNextEvent({groupId});
     expect(response).rejects.toThrow(new UnexpectedError());
   });
 
   it('should throw SessionExpiredError on status 401', async () => {
-    httpClient.statusCode = 401;
+    httpClient.statusCode = StatusCode.UnauthorizedError;
     const response = sut.loadNextEvent({groupId});
     expect(response).rejects.toThrow(new SessionExpiredError());
   });
 
   it('should throw UnexpectedError on status 403', async () => {
-    httpClient.statusCode = 403;
+    httpClient.statusCode = StatusCode.ForbiddenError;
     const response = sut.loadNextEvent({groupId});
     expect(response).rejects.toThrow(new UnexpectedError());
   });
 
   it('should throw UnexpectedError on status 404', async () => {
-    httpClient.statusCode = 404;
+    httpClient.statusCode = StatusCode.NotFoundError;
     const response = sut.loadNextEvent({groupId});
     expect(response).rejects.toThrow(new UnexpectedError());
   });
 
   it('should throw UnexpectedError on status 500', async () => {
-    httpClient.statusCode = 500;
+    httpClient.statusCode = StatusCode.ServerError;
     const response = sut.loadNextEvent({groupId});
     expect(response).rejects.toThrow(new UnexpectedError());
   });
