@@ -62,7 +62,10 @@ class LoadNextEventRepositoryAxios implements LoadNextEventRepository {
     const response = await this.httpClient.get(url, headers);
     if (response.statusCode === DomainErrorStatus.unexpected) {
       throw new UnexpectedError();
+    } else if (response.statusCode === 403) {
+      throw new UnexpectedError();
     }
+
     return new NextEventEntity({
       date: response.data.date,
       groupName: response.data.groupName,
@@ -151,9 +154,13 @@ describe('LoadNextEventRepositoryAxios', () => {
 
   it('should throw UnexpectedError on status 400', async () => {
     httpClient.statusCode = DomainErrorStatus.unexpected;
-
     const response = sut.loadNextEvent({groupId});
+    expect(response).rejects.toThrow(new UnexpectedError());
+  });
 
+  it('should throw UnexpectedError on status 403', async () => {
+    httpClient.statusCode = 403;
+    const response = sut.loadNextEvent({groupId});
     expect(response).rejects.toThrow(new UnexpectedError());
   });
 });
