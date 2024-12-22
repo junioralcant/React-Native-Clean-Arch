@@ -8,12 +8,14 @@ type loadNextEventParams = {groupId: string};
 
 type GetParams = {
   url: string;
-  params: Record<string, string>;
+  params: Json;
 };
 
 interface HttpGetClient {
   get<T>(params: GetParams): Promise<T>;
 }
+
+type Json = Record<string, any>;
 
 class LoadNextEventApiRepository implements ILoadNextEventRepository {
   constructor(
@@ -23,7 +25,7 @@ class LoadNextEventApiRepository implements ILoadNextEventRepository {
   async loadNextEvent({
     groupId,
   }: loadNextEventParams): Promise<NextEventEntity> {
-    const response = await this.httpClient.get<Record<string, any>>({
+    const response = await this.httpClient.get<Json>({
       url: this.url,
       params: {groupId},
     });
@@ -32,7 +34,7 @@ class LoadNextEventApiRepository implements ILoadNextEventRepository {
   }
 }
 
-function toNextEventEntity(response: any): NextEventEntity {
+function toNextEventEntity(response: Json): NextEventEntity {
   return new NextEventEntity({
     date: response.date,
     groupName: response.groupName,
@@ -60,7 +62,7 @@ const adapter = {
 class HttpGetClientSpy implements HttpGetClient {
   url? = '';
   callsCount = 0;
-  params: Record<string, string> = {};
+  params: Json = {};
   response: any = {};
   error?: Error;
 
