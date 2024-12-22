@@ -12,7 +12,7 @@ type GetParams = {
 };
 
 interface HttpGetClient {
-  get(params: GetParams): Promise<any>;
+  get<T>(params: GetParams): Promise<T>;
 }
 
 class LoadNextEventApiRepository implements ILoadNextEventRepository {
@@ -23,7 +23,7 @@ class LoadNextEventApiRepository implements ILoadNextEventRepository {
   async loadNextEvent({
     groupId,
   }: loadNextEventParams): Promise<NextEventEntity> {
-    const response = await this.httpClient.get({
+    const response = await this.httpClient.get<Record<string, any>>({
       url: this.url,
       params: {groupId},
     });
@@ -64,7 +64,7 @@ class HttpGetClientSpy implements HttpGetClient {
   response: any = {};
   error?: Error;
 
-  async get(params: GetParams): Promise<any> {
+  async get<T>(params: GetParams): Promise<T> {
     this.url = params.url;
     this.params = params.params;
     this.callsCount++;
