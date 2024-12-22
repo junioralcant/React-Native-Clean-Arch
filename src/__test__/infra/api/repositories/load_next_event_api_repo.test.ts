@@ -4,17 +4,9 @@ import {NextEventEntity} from '../../../../domain/entities/next_event_';
 import {NextEventPlayerEntity} from '../../../../domain/entities/next_event_player';
 import {ILoadNextEventRepository} from '../../../../domain/repository/load_next_repo';
 import {Json} from '../../../../infra/types/json';
+import {HttpGetClient} from '../../../../infra/api/clients/http_get_clients';
 
 type loadNextEventParams = {groupId: string};
-
-type GetParams = {
-  url: string;
-  params: Json;
-};
-
-interface HttpGetClient {
-  get<T>(params: GetParams): Promise<T>;
-}
 
 class LoadNextEventApiRepository implements ILoadNextEventRepository {
   constructor(
