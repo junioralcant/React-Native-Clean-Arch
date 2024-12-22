@@ -1,6 +1,6 @@
 import {Json} from '../../types/json';
 
-type GetParams = {
+export type GetParams = {
   url: string;
   params: Json;
 };

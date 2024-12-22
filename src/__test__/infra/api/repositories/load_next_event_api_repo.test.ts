@@ -4,7 +4,11 @@ import {NextEventEntity} from '../../../../domain/entities/next_event_';
 import {NextEventPlayerEntity} from '../../../../domain/entities/next_event_player';
 import {ILoadNextEventRepository} from '../../../../domain/repository/load_next_repo';
 import {Json} from '../../../../infra/types/json';
-import {HttpGetClient} from '../../../../infra/api/clients/http_get_clients';
+import {
+  GetParams,
+  HttpGetClient,
+} from '../../../../infra/api/clients/http_get_clients';
+import {toNextEventPlayerEntity} from '../../../../infra/api/adapters/next_event_player_adapter';
 
 type loadNextEventParams = {groupId: string};
 
@@ -30,19 +34,6 @@ function toNextEventEntity(response: Json): NextEventEntity {
     date: response.date,
     groupName: response.groupName,
     players: response.players.map(toNextEventPlayerEntity),
-  });
-}
-
-function toNextEventPlayerEntity(
-  player: NextEventPlayerEntity,
-): NextEventPlayerEntity {
-  return NextEventPlayerEntity.create({
-    id: player.id,
-    name: player.name,
-    isConfirmed: player.isConfirmed,
-    photo: player.photo,
-    position: player.position,
-    confirmationDate: player?.confirmationDate,
   });
 }
 
