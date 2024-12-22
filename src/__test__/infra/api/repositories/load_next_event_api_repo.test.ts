@@ -1,27 +1,7 @@
 import {expect, it, describe, beforeEach} from '@jest/globals';
 import {anyString} from '../../../helpers/fakes';
-import {Json} from '../../../../infra/types/json';
-import {
-  GetParams,
-  HttpGetClient,
-} from '../../../../infra/api/clients/http_get_clients';
 import {LoadNextEventApiRepository} from '../../../../infra/api/repositories/load_next_event_api_repo';
-
-class HttpGetClientSpy implements HttpGetClient {
-  url? = '';
-  callsCount = 0;
-  params: Json = {};
-  response: any = {};
-  error?: Error;
-
-  async get<T>(params: GetParams): Promise<T> {
-    this.url = params.url;
-    this.params = params.params;
-    this.callsCount++;
-    if (this.error) throw this.error;
-    return this.response;
-  }
-}
+import {HttpGetClientSpy} from '../clients/http_get_client_spy';
 
 describe('LoadNextEventApiRepository', () => {
   let groupId: string;
