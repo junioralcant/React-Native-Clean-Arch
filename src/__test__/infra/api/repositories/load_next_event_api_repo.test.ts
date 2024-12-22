@@ -9,6 +9,7 @@ import {
   HttpGetClient,
 } from '../../../../infra/api/clients/http_get_clients';
 import {toNextEventPlayerEntity} from '../../../../infra/api/adapters/next_event_player_adapter';
+import {toNextEventEntity} from '../../../../infra/api/adapters/next_event_adapter';
 
 type loadNextEventParams = {groupId: string};
 
@@ -25,21 +26,9 @@ class LoadNextEventApiRepository implements ILoadNextEventRepository {
       params: {groupId},
     });
 
-    return adapter.toNextEventEntity(response);
+    return toNextEventEntity(response);
   }
 }
-
-function toNextEventEntity(response: Json): NextEventEntity {
-  return new NextEventEntity({
-    date: response.date,
-    groupName: response.groupName,
-    players: response.players.map(toNextEventPlayerEntity),
-  });
-}
-
-const adapter = {
-  toNextEventEntity,
-};
 
 class HttpGetClientSpy implements HttpGetClient {
   url? = '';
