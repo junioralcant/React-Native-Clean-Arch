@@ -3,6 +3,7 @@ import {anyString} from '../../../helpers/fakes';
 import {NextEventEntity} from '../../../../domain/entities/next_event_';
 import {NextEventPlayerEntity} from '../../../../domain/entities/next_event_player';
 import {ILoadNextEventRepository} from '../../../../domain/repository/load_next_repo';
+import {Json} from '../../../../infra/types/json';
 
 type loadNextEventParams = {groupId: string};
 
@@ -14,8 +15,6 @@ type GetParams = {
 interface HttpGetClient {
   get<T>(params: GetParams): Promise<T>;
 }
-
-type Json = Record<string, any>;
 
 class LoadNextEventApiRepository implements ILoadNextEventRepository {
   constructor(
