@@ -1,34 +1,11 @@
 import {expect, it, describe, beforeEach} from '@jest/globals';
 import {anyString} from '../../../helpers/fakes';
-import {NextEventEntity} from '../../../../domain/entities/next_event_';
-import {NextEventPlayerEntity} from '../../../../domain/entities/next_event_player';
-import {ILoadNextEventRepository} from '../../../../domain/repository/load_next_repo';
 import {Json} from '../../../../infra/types/json';
 import {
   GetParams,
   HttpGetClient,
 } from '../../../../infra/api/clients/http_get_clients';
-import {toNextEventPlayerEntity} from '../../../../infra/api/adapters/next_event_player_adapter';
-import {toNextEventEntity} from '../../../../infra/api/adapters/next_event_adapter';
-
-type loadNextEventParams = {groupId: string};
-
-class LoadNextEventApiRepository implements ILoadNextEventRepository {
-  constructor(
-    private readonly httpClient: HttpGetClient,
-    private readonly url: string,
-  ) {}
-  async loadNextEvent({
-    groupId,
-  }: loadNextEventParams): Promise<NextEventEntity> {
-    const response = await this.httpClient.get<Json>({
-      url: this.url,
-      params: {groupId},
-    });
-
-    return toNextEventEntity(response);
-  }
-}
+import {LoadNextEventApiRepository} from '../../../../infra/api/repositories/load_next_event_api_repo';
 
 class HttpGetClientSpy implements HttpGetClient {
   url? = '';
