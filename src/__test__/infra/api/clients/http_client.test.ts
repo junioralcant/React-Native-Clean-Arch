@@ -6,7 +6,12 @@ class HttpClient {
   constructor(private readonly client: ClientSpy) {}
 
   async get({url}: {url: string}) {
-    this.client.get(url);
+    const headers = {
+      'content-type': 'application/json',
+      accept: 'application/json',
+    };
+
+    this.client.get(url, headers);
   }
 }
 describe('HttpClient', () => {
@@ -30,6 +35,12 @@ describe('HttpClient', () => {
     it('should request with correct url', async () => {
       await sut.get({url});
       expect(client.url).toBe(url);
+    });
+
+    it('should request with default headers', async () => {
+      await sut.get({url});
+      expect(client?.headers['content-type']).toBe(`application/json`);
+      expect(client?.headers['accept']).toBe(`application/json`);
     });
   });
 });
