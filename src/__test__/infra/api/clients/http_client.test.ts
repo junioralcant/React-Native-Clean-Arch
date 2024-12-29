@@ -5,13 +5,14 @@ import {anyString} from '../../../helpers/fakes';
 class HttpClient {
   constructor(private readonly client: ClientSpy) {}
 
-  async get({url}: {url: string}) {
-    const headers = {
+  async get({url, headers}: {url: string; headers?: any}) {
+    const allHeaders = {
+      ...headers,
       'content-type': 'application/json',
       accept: 'application/json',
     };
 
-    this.client.get(url, headers);
+    this.client.get(url, allHeaders);
   }
 }
 describe('HttpClient', () => {
@@ -41,6 +42,19 @@ describe('HttpClient', () => {
       await sut.get({url});
       expect(client?.headers['content-type']).toBe(`application/json`);
       expect(client?.headers['accept']).toBe(`application/json`);
+    });
+
+    it('should append headers', async () => {
+      const headers = {
+        h1: 'value1',
+        h2: 'value2',
+      };
+
+      await sut.get({url, headers});
+      expect(client?.headers['content-type']).toBe(`application/json`);
+      expect(client?.headers['accept']).toBe(`application/json`);
+      expect(client?.headers['h1']).toBe(`value1`);
+      expect(client?.headers['h2']).toBe(`value2`);
     });
   });
 });
