@@ -21,13 +21,13 @@ export type HttpResponse<TData = any> = {
   data: TData;
 };
 
-export interface IHttpClient<T = any> {
+export interface IClient<T = any> {
   get(url: string, headers?: any): Promise<HttpResponse<T>>;
 }
 
 export class LoadNextEventRepository implements ILoadNextEventRepository {
   constructor(
-    private readonly httpClient: IHttpClient<NextEventEntity>,
+    private readonly httpClient: IClient<NextEventEntity>,
     private readonly url: string,
   ) {}
   async loadNextEvent({

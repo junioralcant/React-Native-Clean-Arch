@@ -1,9 +1,9 @@
 import {
   HttpResponse,
-  IHttpClient,
+  IClient,
 } from '../../../../infra/api/repositories/load_next_event_repository';
 
-export class HttpClientSpy implements IHttpClient {
+export class ClientSpy implements IClient {
   callsCount = 0;
   method = '';
   url = '';

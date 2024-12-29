@@ -7,18 +7,18 @@ import {
   LoadNextEventRepository,
   StatusCode,
 } from '../../../../infra/api/repositories/load_next_event_repository';
-import {HttpClientSpy} from '../clients/http_client_spy';
+import {ClientSpy} from '../clients/client_spy';
 
 describe('LoadNextEventRepository', () => {
   let groupId: string;
   let url: string;
-  let httpClient: HttpClientSpy;
+  let httpClient: ClientSpy;
   let sut: LoadNextEventRepository;
 
   beforeEach(() => {
     groupId = anyString();
     url = `https://domain.com/api/groups/:groupId/next_events`;
-    httpClient = new HttpClientSpy();
+    httpClient = new ClientSpy();
     httpClient.response = {
       date: '2024-01-01T10:30',
       groupName: 'any_name',
