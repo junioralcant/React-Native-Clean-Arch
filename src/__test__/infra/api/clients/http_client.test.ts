@@ -33,9 +33,10 @@ class HttpClient {
     queryString?: Record<string, string>,
   ) {
     if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        url = url.replace(`:${key}`, value ?? '');
-      });
+      url = Object.entries(params).reduce(
+        (acc, [key, value]) => acc.replace(`:${key}`, value ?? ''),
+        url,
+      );
     }
 
     if (url.endsWith('/')) {
@@ -43,11 +44,9 @@ class HttpClient {
     }
 
     if (queryString) {
-      url += '?';
-      Object.entries(queryString).forEach(([key, value]) => {
-        url = `${url}${key}=${value}&`;
-      });
-      url = url.slice(0, -1);
+      url = Object.entries(queryString)
+        .reduce((acc, [key, value]) => `${acc}${key}=${value}&`, (url += '?'))
+        .slice(0, -1);
     }
 
     return url;
