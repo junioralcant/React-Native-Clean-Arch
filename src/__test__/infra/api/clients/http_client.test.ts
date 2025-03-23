@@ -12,7 +12,7 @@ class HttpClient {
   }: {
     url: string;
     headers?: any;
-    params?: Record<string, string>;
+    params?: Record<string, string | null>;
   }) {
     const allHeaders = {
       ...headers,
@@ -25,11 +25,15 @@ class HttpClient {
     this.client.get(uri, allHeaders);
   }
 
-  private buildUri(url: string, params?: Record<string, string>) {
+  private buildUri(url: string, params?: Record<string, string | null>) {
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
-        url = url.replace(`:${key}`, value);
+        url = url.replace(`:${key}`, value ?? '');
       });
+    }
+
+    if (url.endsWith('/')) {
+      url = url.slice(0, -1);
     }
 
     return url;
@@ -87,6 +91,18 @@ describe('HttpClient', () => {
         },
       });
       expect(client.url).toBe('http://any_url.com/value1/value2');
+    });
+
+    it('should request with optional param', async () => {
+      url = 'http://any_url.com/:param1/:param2';
+      await sut.get({
+        url,
+        params: {
+          param1: 'value1',
+          param2: null,
+        },
+      });
+      expect(client.url).toBe('http://any_url.com/value1');
     });
   });
 });
