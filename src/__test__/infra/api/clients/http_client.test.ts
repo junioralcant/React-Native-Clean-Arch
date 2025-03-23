@@ -5,14 +5,34 @@ import {anyString} from '../../../helpers/fakes';
 class HttpClient {
   constructor(private readonly client: ClientSpy) {}
 
-  async get({url, headers}: {url: string; headers?: any}) {
+  async get({
+    url,
+    headers,
+    params,
+  }: {
+    url: string;
+    headers?: any;
+    params?: Record<string, string>;
+  }) {
     const allHeaders = {
       ...headers,
       'content-type': 'application/json',
       accept: 'application/json',
     };
 
-    this.client.get(url, allHeaders);
+    const uri = this.buildUri(url, params);
+
+    this.client.get(uri, allHeaders);
+  }
+
+  private buildUri(url: string, params?: Record<string, string>) {
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        url = url.replace(`:${key}`, value);
+      });
+    }
+
+    return url;
   }
 }
 describe('HttpClient', () => {
@@ -55,6 +75,18 @@ describe('HttpClient', () => {
       expect(client?.headers['accept']).toBe(`application/json`);
       expect(client?.headers['h1']).toBe(`value1`);
       expect(client?.headers['h2']).toBe(`value2`);
+    });
+
+    it('should request with correct params', async () => {
+      url = 'http://any_url.com/:param1/:param2';
+      await sut.get({
+        url,
+        params: {
+          param1: 'value1',
+          param2: 'value2',
+        },
+      });
+      expect(client.url).toBe('http://any_url.com/value1/value2');
     });
   });
 });
