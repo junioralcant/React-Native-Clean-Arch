@@ -104,5 +104,16 @@ describe('HttpClient', () => {
       });
       expect(client.url).toBe('http://any_url.com/value1');
     });
+
+    it('should request with invalid param', async () => {
+      url = 'http://any_url.com/:param1/:param2';
+      await sut.get({
+        url,
+        params: {
+          param3: 'value1',
+        },
+      });
+      expect(client.url).toBe('http://any_url.com/:param1/:param2');
+    });
   });
 });
