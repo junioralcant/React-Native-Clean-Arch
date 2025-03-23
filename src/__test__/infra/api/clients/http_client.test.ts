@@ -9,10 +9,12 @@ class HttpClient {
     url,
     headers,
     params,
+    queryString,
   }: {
     url: string;
     headers?: any;
     params?: Record<string, string | null>;
+    queryString?: Record<string, string>;
   }) {
     const allHeaders = {
       ...headers,
@@ -20,12 +22,16 @@ class HttpClient {
       accept: 'application/json',
     };
 
-    const uri = this.buildUri(url, params);
+    const uri = this.buildUri(url, params, queryString);
 
     this.client.get(uri, allHeaders);
   }
 
-  private buildUri(url: string, params?: Record<string, string | null>) {
+  private buildUri(
+    url: string,
+    params?: Record<string, string | null>,
+    queryString?: Record<string, string>,
+  ) {
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         url = url.replace(`:${key}`, value ?? '');
@@ -33,6 +39,14 @@ class HttpClient {
     }
 
     if (url.endsWith('/')) {
+      url = url.slice(0, -1);
+    }
+
+    if (queryString) {
+      url += '?';
+      Object.entries(queryString).forEach(([key, value]) => {
+        url = `${url}${key}=${value}&`;
+      });
       url = url.slice(0, -1);
     }
 
@@ -105,15 +119,15 @@ describe('HttpClient', () => {
       expect(client.url).toBe('http://any_url.com/value1');
     });
 
-    it('should request with invalid param', async () => {
-      url = 'http://any_url.com/:param1/:param2';
+    it('should request with correct queryString', async () => {
       await sut.get({
         url,
-        params: {
-          param3: 'value1',
+        queryString: {
+          query1: 'value1',
+          query2: 'value2',
         },
       });
-      expect(client.url).toBe('http://any_url.com/:param1/:param2');
+      expect(client.url).toBe(`${url}?query1=value1&query2=value2`);
     });
   });
 });
