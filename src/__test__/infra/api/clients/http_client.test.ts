@@ -6,6 +6,7 @@ import {
   IClient,
   StatusCode,
 } from '../../../../infra/api/repositories/load_next_event_repository';
+import {SessionExpiredError} from '../../../../domain/erros/sesstion_expired_error';
 
 class HttpClient {
   constructor(private readonly client: IClient) {}
@@ -31,11 +32,11 @@ class HttpClient {
 
     const response = await this.client.get(uri, allHeaders);
 
-    console.log('response', response);
-
     switch (response.statusCode) {
       case StatusCode.Success:
         break;
+      case StatusCode.UnauthorizedError:
+        throw new SessionExpiredError();
       default:
         throw new UnexpectedError();
     }
@@ -167,6 +168,12 @@ describe('HttpClient', () => {
 
       const response = sut.get({url});
       expect(response).rejects.toThrow(new UnexpectedError());
+    });
+
+    it('should throw SessionExpiredError on status 401', async () => {
+      client.statusCode = StatusCode.UnauthorizedError;
+      const response = sut.get({url});
+      expect(response).rejects.toThrow(new SessionExpiredError());
     });
   });
 });
