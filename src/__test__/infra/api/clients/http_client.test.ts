@@ -11,7 +11,7 @@ import {SessionExpiredError} from '../../../../domain/erros/sesstion_expired_err
 class HttpClient {
   constructor(private readonly client: IClient) {}
 
-  async get({
+  async get<T = any>({
     url,
     headers,
     params,
@@ -21,7 +21,7 @@ class HttpClient {
     headers?: any;
     params?: Record<string, string | null>;
     queryString?: Record<string, string>;
-  }) {
+  }): Promise<T> {
     const allHeaders = {
       ...headers,
       'content-type': 'application/json',
@@ -34,7 +34,7 @@ class HttpClient {
 
     switch (response.statusCode) {
       case StatusCode.Success:
-        break;
+        return response.data;
       case StatusCode.UnauthorizedError:
         throw new SessionExpiredError();
       default:
@@ -192,6 +192,18 @@ describe('HttpClient', () => {
       client.statusCode = StatusCode.ServerError;
       const response = sut.get({url});
       expect(response).rejects.toThrow(new UnexpectedError());
+    });
+
+    it('should return on Map', async () => {
+      client.response = {
+        key1: 'value1',
+        key2: 'value2',
+      };
+
+      const data = await sut.get<{key1: string; key2: string}>({url});
+
+      expect(data['key1']).toBe('value1');
+      expect(data['key2']).toBe('value2');
     });
   });
 });
