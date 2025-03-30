@@ -205,5 +205,14 @@ describe('HttpClient', () => {
       expect(data['key1']).toBe('value1');
       expect(data['key2']).toBe('value2');
     });
+
+    it('should return correct response on array', async () => {
+      client.response = [{key1: 'value1'}, {key2: 'value2'}];
+
+      const data = await sut.get<Array<{key1: string; key2: string}>>({url});
+
+      expect(data[0]['key1']).toBe('value1');
+      expect(data[1]['key2']).toBe('value2');
+    });
   });
 });
