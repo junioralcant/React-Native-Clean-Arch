@@ -1,9 +1,14 @@
 import {expect, it, describe, beforeEach} from '@jest/globals';
 import {ClientSpy} from './client_spy';
 import {anyString} from '../../../helpers/fakes';
+import {UnexpectedError} from '../../../../domain/erros/unexpecte_error';
+import {
+  IClient,
+  StatusCode,
+} from '../../../../infra/api/repositories/load_next_event_repository';
 
 class HttpClient {
-  constructor(private readonly client: ClientSpy) {}
+  constructor(private readonly client: IClient) {}
 
   async get({
     url,
@@ -24,7 +29,16 @@ class HttpClient {
 
     const uri = this.buildUri(url, params, queryString);
 
-    this.client.get(uri, allHeaders);
+    const response = await this.client.get(uri, allHeaders);
+
+    console.log('response', response);
+
+    switch (response.statusCode) {
+      case StatusCode.Success:
+        break;
+      default:
+        throw new UnexpectedError();
+    }
   }
 
   private buildUri(
@@ -146,6 +160,13 @@ describe('HttpClient', () => {
       expect(client.url).toBe(
         `http://any_url.com/value3/value4?query1=value1&query2=value2`,
       );
+    });
+
+    it('should throw UnexpectedError on status 400', async () => {
+      client.statusCode = StatusCode.BadRequestError;
+
+      const response = sut.get({url});
+      expect(response).rejects.toThrow(new UnexpectedError());
     });
   });
 });
