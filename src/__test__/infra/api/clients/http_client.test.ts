@@ -175,5 +175,23 @@ describe('HttpClient', () => {
       const response = sut.get({url});
       expect(response).rejects.toThrow(new SessionExpiredError());
     });
+
+    it('should throw UnexpectedError on status 403', async () => {
+      client.statusCode = StatusCode.ForbiddenError;
+      const response = sut.get({url});
+      expect(response).rejects.toThrow(new UnexpectedError());
+    });
+
+    it('should throw UnexpectedError on status 404', async () => {
+      client.statusCode = StatusCode.NotFoundError;
+      const response = sut.get({url});
+      expect(response).rejects.toThrow(new UnexpectedError());
+    });
+
+    it('should throw UnexpectedError on status 500', async () => {
+      client.statusCode = StatusCode.ServerError;
+      const response = sut.get({url});
+      expect(response).rejects.toThrow(new UnexpectedError());
+    });
   });
 });
