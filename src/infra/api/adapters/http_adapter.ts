@@ -1,11 +1,7 @@
 import {SessionExpiredError} from '../../../domain/erros/sesstion_expired_error';
 import {UnexpectedError} from '../../../domain/erros/unexpecte_error';
 import {GetParams, HttpGetClient} from '../clients/http_get_clients';
-import {
-  HttpResponse,
-  IClient,
-  StatusCode,
-} from '../repositories/load_next_event_repository';
+import {HttpResponse, IClient, StatusCode} from '../contracts/client';
 
 export class HttpAdapter implements HttpGetClient {
   constructor(private readonly client: IClient) {}

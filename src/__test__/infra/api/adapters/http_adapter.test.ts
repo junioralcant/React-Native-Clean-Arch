@@ -1,7 +1,7 @@
 import {expect, it, describe, beforeEach} from '@jest/globals';
 import {anyString} from '../../../helpers/fakes';
 import {UnexpectedError} from '../../../../domain/erros/unexpecte_error';
-import {StatusCode} from '../../../../infra/api/repositories/load_next_event_repository';
+import {StatusCode} from '../../../../infra/api/contracts/client';
 import {SessionExpiredError} from '../../../../domain/erros/sesstion_expired_error';
 import {ClientSpy} from '../clients/client_spy';
 import {HttpAdapter} from '../../../../infra/api/adapters/http_adapter';
