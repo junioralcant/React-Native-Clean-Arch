@@ -1,8 +1,9 @@
 import {SessionExpiredError} from '../../../domain/erros/sesstion_expired_error';
 import {UnexpectedError} from '../../../domain/erros/unexpecte_error';
+import {GetParams, HttpGetClient} from '../clients/http_get_clients';
 import {IClient, StatusCode} from '../repositories/load_next_event_repository';
 
-export class HttpAdapter {
+export class HttpAdapter implements HttpGetClient {
   constructor(private readonly client: IClient) {}
 
   async get<T = any>({
@@ -10,12 +11,7 @@ export class HttpAdapter {
     headers,
     params,
     queryString,
-  }: {
-    url: string;
-    headers?: any;
-    params?: Record<string, string | null>;
-    queryString?: Record<string, string>;
-  }): Promise<T> {
+  }: GetParams): Promise<T> {
     const allHeaders = {
       ...headers,
       'content-type': 'application/json',
