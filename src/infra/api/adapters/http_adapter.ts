@@ -1,7 +1,11 @@
 import {SessionExpiredError} from '../../../domain/erros/sesstion_expired_error';
 import {UnexpectedError} from '../../../domain/erros/unexpecte_error';
 import {GetParams, HttpGetClient} from '../clients/http_get_clients';
-import {IClient, StatusCode} from '../repositories/load_next_event_repository';
+import {
+  HttpResponse,
+  IClient,
+  StatusCode,
+} from '../repositories/load_next_event_repository';
 
 export class HttpAdapter implements HttpGetClient {
   constructor(private readonly client: IClient) {}
@@ -12,16 +16,24 @@ export class HttpAdapter implements HttpGetClient {
     params,
     queryString,
   }: GetParams): Promise<T> {
-    const allHeaders = {
+    const uri = this.buildUri(url, params, queryString);
+
+    const response = await this.client.get(uri, this.buildHeaders(headers));
+
+    return this.handleResponse<T>(response);
+  }
+
+  private buildHeaders(
+    headers: Record<string, string>,
+  ): Record<string, string> {
+    return {
       ...headers,
       'content-type': 'application/json',
       accept: 'application/json',
     };
+  }
 
-    const uri = this.buildUri(url, params, queryString);
-
-    const response = await this.client.get(uri, allHeaders);
-
+  private handleResponse<T>(response: HttpResponse): T {
     switch (response.statusCode) {
       case StatusCode.Success:
         return response.data;
