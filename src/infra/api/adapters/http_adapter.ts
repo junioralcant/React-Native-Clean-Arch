@@ -8,7 +8,7 @@ export class HttpAdapter implements HttpGetClient {
 
   async get<T = any>({
     url,
-    headers,
+    headers = {},
     params,
     queryString,
   }: GetParams): Promise<T> {
@@ -22,10 +22,22 @@ export class HttpAdapter implements HttpGetClient {
   private buildHeaders(
     headers: Record<string, string>,
   ): Record<string, string> {
-    return {
-      ...headers,
+    const defaultHeaders = {
       'content-type': 'application/json',
       accept: 'application/json',
+    };
+
+    const allHeadersConvertedToString = Object.entries(headers).reduce(
+      (acc, [key, value]) => {
+        acc[key] = value.toString();
+        return acc;
+      },
+      headers,
+    );
+
+    return {
+      ...allHeadersConvertedToString,
+      ...defaultHeaders,
     };
   }
 

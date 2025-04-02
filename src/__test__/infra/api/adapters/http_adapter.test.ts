@@ -39,6 +39,7 @@ describe('HttpAdapter', () => {
       const headers = {
         h1: 'value1',
         h2: 'value2',
+        h3: 1234,
       };
 
       await sut.get({url, headers});
@@ -46,6 +47,7 @@ describe('HttpAdapter', () => {
       expect(client?.headers['accept']).toBe(`application/json`);
       expect(client?.headers['h1']).toBe(`value1`);
       expect(client?.headers['h2']).toBe(`value2`);
+      expect(client?.headers['h3']).toBe('1234');
     });
 
     it('should request with correct params', async () => {
