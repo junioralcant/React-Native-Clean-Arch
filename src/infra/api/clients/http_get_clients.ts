@@ -3,8 +3,8 @@ import {Json} from '../../types/json';
 export type GetParams = {
   url: string;
   headers?: any;
-  params?: Record<string, string | null>;
-  queryString?: Record<string, string>;
+  params?: Record<string, string | number | null>;
+  queryString?: Record<string, string | number | null>;
 };
 
 export interface HttpGetClient {

@@ -51,15 +51,16 @@ describe('HttpAdapter', () => {
     });
 
     it('should request with correct params', async () => {
-      url = 'http://any_url.com/:param1/:param2';
+      url = 'http://any_url.com/:param1/:param2/:param3';
       await sut.get({
         url,
         params: {
           param1: 'value1',
           param2: 'value2',
+          param3: 1234,
         },
       });
-      expect(client.url).toBe('http://any_url.com/value1/value2');
+      expect(client.url).toBe('http://any_url.com/value1/value2/1234');
     });
 
     it('should request with optional param', async () => {
@@ -80,9 +81,10 @@ describe('HttpAdapter', () => {
         queryString: {
           query1: 'value1',
           query2: 'value2',
+          query3: 1234,
         },
       });
-      expect(client.url).toBe(`${url}?query1=value1&query2=value2`);
+      expect(client.url).toBe(`${url}?query1=value1&query2=value2&query3=1234`);
     });
 
     it('should request with correct queryString and params', async () => {

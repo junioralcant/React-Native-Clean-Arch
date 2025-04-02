@@ -54,12 +54,12 @@ export class HttpAdapter implements HttpGetClient {
 
   private buildUri(
     url: string,
-    params?: Record<string, string | null>,
-    queryString?: Record<string, string>,
+    params?: GetParams['params'],
+    queryString?: GetParams['queryString'],
   ) {
     if (params) {
       url = Object.entries(params).reduce(
-        (acc, [key, value]) => acc.replace(`:${key}`, value ?? ''),
+        (acc, [key, value]) => acc.replace(`:${key}`, value?.toString() ?? ''),
         url,
       );
     }
