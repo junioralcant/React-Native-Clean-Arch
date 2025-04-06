@@ -1,5 +1,3 @@
-import {Json} from '../../types/json';
-
 export type GetParams = {
   url: string;
   headers?: any;
