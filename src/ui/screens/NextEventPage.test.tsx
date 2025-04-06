@@ -1,6 +1,6 @@
+import React, {useEffect, useState} from 'react';
 import {expect, it, describe} from '@jest/globals';
 import {render, screen, waitFor} from '@testing-library/react-native';
-import {useEffect, useState} from 'react';
 
 import {Text, View} from 'react-native';
 import {anyString} from '../../__test__/helpers/fakes';
@@ -43,7 +43,7 @@ class NextEventPresenterSpy implements INextEventPresenter {
   };
 }
 
-function NextEventPage({presenter, groupId}: NextEventPageProps) {
+const NextEventPage = ({presenter, groupId}: NextEventPageProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
   const [nextEvent, setNextEvent] = useState<NextEventViewModel | undefined>();
@@ -73,17 +73,36 @@ function NextEventPage({presenter, groupId}: NextEventPageProps) {
     }
     return (
       <View>
-        <Text>DENTRO - GOLEIROS</Text>
-        <Text>{nextEvent?.goalKeepers.length}</Text>
-        {nextEvent?.goalKeepers.map(goalKeeper => (
-          <Text key={goalKeeper.name}>{goalKeeper.name}</Text>
-        ))}
+        {nextEvent && nextEvent.goalKeepers.length > 0 && (
+          <ListSection
+            title="DENTRO - GOLEIROS"
+            goalKeepers={nextEvent.goalKeepers}
+          />
+        )}
       </View>
     );
   };
 
   return renderContent();
-}
+};
+
+const ListSection = ({
+  title,
+  goalKeepers,
+}: {
+  title: string;
+  goalKeepers: NextEventPlayerViewModel[];
+}) => {
+  return (
+    <>
+      <Text>{title}</Text>
+      <Text>{goalKeepers.length}</Text>
+      {goalKeepers.map(goalKeeper => (
+        <Text key={goalKeeper.name}>{goalKeeper.name}</Text>
+      ))}
+    </>
+  );
+};
 
 type NextEventPageProps = {
   readonly presenter: INextEventPresenter;
@@ -164,5 +183,19 @@ describe('NextEventPage', () => {
     expect(await screen.findByText('Junior')).toBeTruthy();
     expect(await screen.findByText('Lidya')).toBeTruthy();
     expect(await screen.findByText('Mateus')).toBeTruthy();
+  });
+
+  it('should hide GoalKeeper section when there are no goalkeepers', async () => {
+    const presenter = new NextEventPresenterSpy();
+    presenter.response = new NextEventViewModel({
+      goalKeepers: [],
+    });
+
+    sut({presenter});
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('spinner')).toBeFalsy();
+      expect(screen.queryByText('DENTRO - GOLEIROS')).toBeFalsy();
+    });
   });
 });
