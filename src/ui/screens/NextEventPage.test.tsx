@@ -20,21 +20,34 @@ class NextEventPresenterSpy implements INextEventPresenter {
 
 function NextEventPage({presenter, groupId}: NextEventPageProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
+
   useEffect(() => {
     const loadingLoadNextEvent = async () => {
-      setIsLoading(true);
-      await presenter.loadNextEvent({groupId});
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        await presenter.loadNextEvent({groupId});
+      } catch (error) {
+        setError(true);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     loadingLoadNextEvent();
   }, []);
 
-  return isLoading ? (
-    <Text testID="spinner">loading...</Text>
-  ) : (
-    <Text>NextEventPage</Text>
-  );
+  const renderContent = () => {
+    if (isLoading) {
+      return <Text testID="spinner">loading...</Text>;
+    }
+    if (error) {
+      return <Text testID="error">error</Text>;
+    }
+    return <Text>NextEventPage</Text>;
+  };
+
+  return renderContent();
 }
 
 type NextEventPageProps = {
@@ -65,13 +78,26 @@ describe('NextEventPage', () => {
   });
 
   it('should hide spinner when data is load success', async () => {
+    sut();
+    expect(screen.getByTestId('spinner')).toBeTruthy();
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('spinner')).toBeFalsy();
+    });
+  });
+
+  it('should hide spinner when data is load error', async () => {
     const presenter = new NextEventPresenterSpy();
+    presenter.loadNextEvent = async () => {
+      throw new Error();
+    };
 
     sut({presenter});
     expect(screen.getByTestId('spinner')).toBeTruthy();
 
     await waitFor(() => {
       expect(screen.queryByTestId('spinner')).toBeFalsy();
+      expect(screen.getByTestId('error')).toBeTruthy();
     });
   });
 });
