@@ -8,15 +8,20 @@ import {anyString} from '../../__test__/helpers/fakes';
 class NextEventViewModel {
   goalKeepers: NextEventPlayerViewModel[];
   players: NextEventPlayerViewModel[];
+  out: NextEventPlayerViewModel[];
+
   constructor({
     goalKeepers,
     players,
+    out,
   }: {
     goalKeepers?: NextEventPlayerViewModel[];
     players?: NextEventPlayerViewModel[];
+    out?: NextEventPlayerViewModel[];
   }) {
     this.goalKeepers = goalKeepers ?? [];
     this.players = players ?? [];
+    this.out = out ?? [];
   }
 }
 
@@ -38,6 +43,7 @@ class NextEventPresenterSpy implements INextEventPresenter {
   response: NextEventViewModel = {
     goalKeepers: [],
     players: [],
+    out: [],
   } as NextEventViewModel;
 
   loadNextEvent = async ({
@@ -86,6 +92,9 @@ const NextEventPage = ({presenter, groupId}: NextEventPageProps) => {
         )}
         {nextEvent && nextEvent.players.length > 0 && (
           <ListSection title="DENTRO - JOGADORES" data={nextEvent.players} />
+        )}
+        {nextEvent && nextEvent.out.length > 0 && (
+          <ListSection title="FORA" data={nextEvent.out} />
         )}
       </View>
     );
@@ -244,6 +253,42 @@ describe('NextEventPage', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('spinner')).toBeFalsy();
       expect(screen.queryByText('DENTRO - JOGADORES')).toBeFalsy();
+    });
+  });
+
+  it('should present out section', async () => {
+    const presenter = new NextEventPresenterSpy();
+    presenter.response = new NextEventViewModel({
+      out: [
+        new NextEventPlayerViewModel({
+          name: 'Lidya',
+        }),
+        new NextEventPlayerViewModel({
+          name: 'Mateus',
+        }),
+      ],
+    });
+
+    sut({presenter});
+    expect(screen.getByTestId('spinner')).toBeTruthy();
+
+    expect(await screen.findByText('FORA')).toBeTruthy();
+    expect(await screen.findByText('2')).toBeTruthy();
+    expect(await screen.findByText('Lidya')).toBeTruthy();
+    expect(await screen.findByText('Mateus')).toBeTruthy();
+  });
+
+  it('should hide out section when there are no out', async () => {
+    const presenter = new NextEventPresenterSpy();
+    presenter.response = new NextEventViewModel({
+      out: [],
+    });
+
+    sut({presenter});
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('spinner')).toBeFalsy();
+      expect(screen.queryByText('FORA')).toBeFalsy();
     });
   });
 });
