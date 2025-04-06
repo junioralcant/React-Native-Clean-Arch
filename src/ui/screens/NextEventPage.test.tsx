@@ -1,5 +1,5 @@
 import {expect, it, describe} from '@jest/globals';
-import {render} from '@testing-library/react-native';
+import {render, screen} from '@testing-library/react-native';
 import {useEffect} from 'react';
 
 import {Text} from 'react-native';
@@ -23,7 +23,7 @@ function NextEventPage({presenter, groupId}: NextEventPageProps) {
     presenter.loadNextEvent({groupId});
   }, []);
 
-  return <Text>NextEventPage</Text>;
+  return <Text testID="spinner">loading...</Text>;
 }
 
 type NextEventPageProps = {
@@ -34,7 +34,7 @@ type NextEventPageProps = {
 const sut = ({
   presenter = new NextEventPresenterSpy(),
   groupId = anyString(),
-}: Partial<NextEventPageProps>) => {
+}: Partial<NextEventPageProps> = {}) => {
   render(<NextEventPage presenter={presenter} groupId={groupId} />);
 };
 
@@ -46,5 +46,10 @@ describe('NextEventPage', () => {
     sut({presenter, groupId});
     expect(presenter.loadCallsCount).toBe(1);
     expect(presenter.groupId).toBe(groupId);
+  });
+
+  it('should present spinner while data is loading', () => {
+    sut();
+    expect(screen.getByTestId('spinner')).toBeTruthy();
   });
 });
