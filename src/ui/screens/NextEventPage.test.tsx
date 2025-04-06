@@ -4,42 +4,11 @@ import {render, screen, waitFor} from '@testing-library/react-native';
 
 import {Text, View} from 'react-native';
 import {anyString} from '../../__test__/helpers/fakes';
-
-class NextEventViewModel {
-  goalKeepers: NextEventPlayerViewModel[];
-  players: NextEventPlayerViewModel[];
-  out: NextEventPlayerViewModel[];
-  doubt: NextEventPlayerViewModel[];
-
-  constructor({
-    goalKeepers,
-    players,
-    out,
-    doubt,
-  }: {
-    goalKeepers?: NextEventPlayerViewModel[];
-    players?: NextEventPlayerViewModel[];
-    out?: NextEventPlayerViewModel[];
-    doubt?: NextEventPlayerViewModel[];
-  }) {
-    this.goalKeepers = goalKeepers ?? [];
-    this.players = players ?? [];
-    this.out = out ?? [];
-    this.doubt = doubt ?? [];
-  }
-}
-
-class NextEventPlayerViewModel {
-  name: string;
-
-  constructor({name}: {name: string}) {
-    this.name = name;
-  }
-}
-
-interface INextEventPresenter {
-  loadNextEvent: ({groupId}: {groupId: string}) => Promise<NextEventViewModel>;
-}
+import {
+  INextEventPresenter,
+  NextEventPlayerViewModel,
+  NextEventViewModel,
+} from '../../presentation/presenters/next_event_presenter';
 
 class NextEventPresenterSpy implements INextEventPresenter {
   loadCallsCount = 0;
