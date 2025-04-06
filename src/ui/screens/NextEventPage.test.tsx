@@ -7,9 +7,16 @@ import {anyString} from '../../__test__/helpers/fakes';
 
 class NextEventViewModel {
   goalKeepers: NextEventPlayerViewModel[];
-
-  constructor({goalKeepers}: {goalKeepers?: NextEventPlayerViewModel[]}) {
+  players: NextEventPlayerViewModel[];
+  constructor({
+    goalKeepers,
+    players,
+  }: {
+    goalKeepers?: NextEventPlayerViewModel[];
+    players?: NextEventPlayerViewModel[];
+  }) {
     this.goalKeepers = goalKeepers ?? [];
+    this.players = players ?? [];
   }
 }
 
@@ -30,6 +37,7 @@ class NextEventPresenterSpy implements INextEventPresenter {
   groupId = '';
   response: NextEventViewModel = {
     goalKeepers: [],
+    players: [],
   } as NextEventViewModel;
 
   loadNextEvent = async ({
@@ -74,10 +82,10 @@ const NextEventPage = ({presenter, groupId}: NextEventPageProps) => {
     return (
       <View>
         {nextEvent && nextEvent.goalKeepers.length > 0 && (
-          <ListSection
-            title="DENTRO - GOLEIROS"
-            goalKeepers={nextEvent.goalKeepers}
-          />
+          <ListSection title="DENTRO - GOLEIROS" data={nextEvent.goalKeepers} />
+        )}
+        {nextEvent && nextEvent.players.length > 0 && (
+          <ListSection title="DENTRO - JOGADORES" data={nextEvent.players} />
         )}
       </View>
     );
@@ -88,16 +96,16 @@ const NextEventPage = ({presenter, groupId}: NextEventPageProps) => {
 
 const ListSection = ({
   title,
-  goalKeepers,
+  data,
 }: {
   title: string;
-  goalKeepers: NextEventPlayerViewModel[];
+  data: NextEventPlayerViewModel[];
 }) => {
   return (
     <>
       <Text>{title}</Text>
-      <Text>{goalKeepers.length}</Text>
-      {goalKeepers.map(goalKeeper => (
+      <Text>{data.length}</Text>
+      {data.map(goalKeeper => (
         <Text key={goalKeeper.name}>{goalKeeper.name}</Text>
       ))}
     </>
@@ -196,6 +204,46 @@ describe('NextEventPage', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('spinner')).toBeFalsy();
       expect(screen.queryByText('DENTRO - GOLEIROS')).toBeFalsy();
+    });
+  });
+
+  it('should present Players section', async () => {
+    const presenter = new NextEventPresenterSpy();
+    presenter.response = new NextEventViewModel({
+      players: [
+        new NextEventPlayerViewModel({
+          name: 'Junior',
+        }),
+        new NextEventPlayerViewModel({
+          name: 'Lidya',
+        }),
+        new NextEventPlayerViewModel({
+          name: 'Mateus',
+        }),
+      ],
+    });
+
+    sut({presenter});
+    expect(screen.getByTestId('spinner')).toBeTruthy();
+
+    expect(await screen.findByText('DENTRO - JOGADORES')).toBeTruthy();
+    expect(await screen.findByText('3')).toBeTruthy();
+    expect(await screen.findByText('Junior')).toBeTruthy();
+    expect(await screen.findByText('Lidya')).toBeTruthy();
+    expect(await screen.findByText('Mateus')).toBeTruthy();
+  });
+
+  it('should hide Players section when there are no players', async () => {
+    const presenter = new NextEventPresenterSpy();
+    presenter.response = new NextEventViewModel({
+      players: [],
+    });
+
+    sut({presenter});
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('spinner')).toBeFalsy();
+      expect(screen.queryByText('DENTRO - JOGADORES')).toBeFalsy();
     });
   });
 });
