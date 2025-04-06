@@ -1,29 +1,40 @@
 import {expect, it, describe} from '@jest/globals';
-import {render, screen} from '@testing-library/react-native';
-import {useEffect} from 'react';
+import {render, screen, waitFor} from '@testing-library/react-native';
+import {useEffect, useState} from 'react';
 
 import {Text} from 'react-native';
 import {anyString} from '../../__test__/helpers/fakes';
 
 interface INextEventPresenter {
-  loadNextEvent: ({groupId}: {groupId: string}) => void;
+  loadNextEvent: ({groupId}: {groupId: string}) => Promise<void>;
 }
 
 class NextEventPresenterSpy implements INextEventPresenter {
   loadCallsCount = 0;
   groupId = '';
-  loadNextEvent = ({groupId}: {groupId: string}) => {
+  loadNextEvent = async ({groupId}: {groupId: string}): Promise<void> => {
     this.loadCallsCount++;
     this.groupId = groupId;
   };
 }
 
 function NextEventPage({presenter, groupId}: NextEventPageProps) {
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
-    presenter.loadNextEvent({groupId});
+    const loadingLoadNextEvent = async () => {
+      setIsLoading(true);
+      await presenter.loadNextEvent({groupId});
+      setIsLoading(false);
+    };
+
+    loadingLoadNextEvent();
   }, []);
 
-  return <Text testID="spinner">loading...</Text>;
+  return isLoading ? (
+    <Text testID="spinner">loading...</Text>
+  ) : (
+    <Text>NextEventPage</Text>
+  );
 }
 
 type NextEventPageProps = {
@@ -51,5 +62,16 @@ describe('NextEventPage', () => {
   it('should present spinner while data is loading', () => {
     sut();
     expect(screen.getByTestId('spinner')).toBeTruthy();
+  });
+
+  it('should hide spinner when data is load success', async () => {
+    const presenter = new NextEventPresenterSpy();
+
+    sut({presenter});
+    expect(screen.getByTestId('spinner')).toBeTruthy();
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('spinner')).toBeFalsy();
+    });
   });
 });
