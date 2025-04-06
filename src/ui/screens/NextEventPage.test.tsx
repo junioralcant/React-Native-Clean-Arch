@@ -9,19 +9,23 @@ class NextEventViewModel {
   goalKeepers: NextEventPlayerViewModel[];
   players: NextEventPlayerViewModel[];
   out: NextEventPlayerViewModel[];
+  doubt: NextEventPlayerViewModel[];
 
   constructor({
     goalKeepers,
     players,
     out,
+    doubt,
   }: {
     goalKeepers?: NextEventPlayerViewModel[];
     players?: NextEventPlayerViewModel[];
     out?: NextEventPlayerViewModel[];
+    doubt?: NextEventPlayerViewModel[];
   }) {
     this.goalKeepers = goalKeepers ?? [];
     this.players = players ?? [];
     this.out = out ?? [];
+    this.doubt = doubt ?? [];
   }
 }
 
@@ -44,6 +48,7 @@ class NextEventPresenterSpy implements INextEventPresenter {
     goalKeepers: [],
     players: [],
     out: [],
+    doubt: [],
   } as NextEventViewModel;
 
   loadNextEvent = async ({
@@ -95,6 +100,9 @@ const NextEventPage = ({presenter, groupId}: NextEventPageProps) => {
         )}
         {nextEvent && nextEvent.out.length > 0 && (
           <ListSection title="FORA" data={nextEvent.out} />
+        )}
+        {nextEvent && nextEvent.doubt.length > 0 && (
+          <ListSection title="DÚVIDA" data={nextEvent.doubt} />
         )}
       </View>
     );
@@ -289,6 +297,42 @@ describe('NextEventPage', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('spinner')).toBeFalsy();
       expect(screen.queryByText('FORA')).toBeFalsy();
+    });
+  });
+
+  it('should present doubt section', async () => {
+    const presenter = new NextEventPresenterSpy();
+    presenter.response = new NextEventViewModel({
+      doubt: [
+        new NextEventPlayerViewModel({
+          name: 'Lidya',
+        }),
+        new NextEventPlayerViewModel({
+          name: 'Mateus',
+        }),
+      ],
+    });
+
+    sut({presenter});
+    expect(screen.getByTestId('spinner')).toBeTruthy();
+
+    expect(await screen.findByText('DÚVIDA')).toBeTruthy();
+    expect(await screen.findByText('2')).toBeTruthy();
+    expect(await screen.findByText('Lidya')).toBeTruthy();
+    expect(await screen.findByText('Mateus')).toBeTruthy();
+  });
+
+  it('should hide doubt section when there are no doubt', async () => {
+    const presenter = new NextEventPresenterSpy();
+    presenter.response = new NextEventViewModel({
+      doubt: [],
+    });
+
+    sut({presenter});
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('spinner')).toBeFalsy();
+      expect(screen.queryByText('DÚVIDA')).toBeFalsy();
     });
   });
 });
