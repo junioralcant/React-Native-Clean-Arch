@@ -8,7 +8,8 @@ const sut = ({position = 'goalkeeper'}: {position?: string}) => {
 };
 
 const PlayerPosition = ({position}: {position?: string}) => {
-  return <Text>Goleiro</Text>;
+  const positionText = position === 'goalkeeper' ? 'Goleiro' : 'Gandula';
+  return <Text>{positionText}</Text>;
 };
 
 describe('PlayerPosition', () => {
