@@ -5,6 +5,7 @@ import {
   NextEventPlayerViewModel,
   NextEventViewModel,
 } from '../../presentation/presenters/next_event_presenter';
+import {PlayerPosition} from '../components/PlayerPosition';
 
 export type NextEventPageProps = {
   readonly presenter: INextEventPresenter;
@@ -23,7 +24,10 @@ const ListSection = ({
       <Text>{title}</Text>
       <Text>{data.length}</Text>
       {data.map(goalKeeper => (
-        <Text key={goalKeeper.name}>{goalKeeper.name}</Text>
+        <View key={goalKeeper.name}>
+          <Text>{goalKeeper.name}</Text>
+          <PlayerPosition position={goalKeeper.position} />
+        </View>
       ))}
     </>
   );

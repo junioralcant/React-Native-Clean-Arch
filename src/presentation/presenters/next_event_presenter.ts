@@ -28,8 +28,10 @@ export class NextEventViewModel {
 
 export class NextEventPlayerViewModel {
   name: string;
+  position: string;
 
-  constructor({name}: {name: string}) {
+  constructor({name, position}: {name: string; position?: string}) {
     this.name = name;
+    this.position = position ?? '';
   }
 }

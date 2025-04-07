@@ -9,5 +9,5 @@ export const PlayerPosition = ({position}: {position?: string}) => {
     return 'Gandula';
   };
 
-  return <Text>{getPositionText()}</Text>;
+  return <Text testID="player_position">{getPositionText()}</Text>;
 };

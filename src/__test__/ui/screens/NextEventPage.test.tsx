@@ -107,6 +107,7 @@ describe('NextEventPage', () => {
     expect(await screen.findByText('Junior')).toBeTruthy();
     expect(await screen.findByText('Lidya')).toBeTruthy();
     expect(await screen.findByText('Mateus')).toBeTruthy();
+    expect(await screen.findAllByTestId('player_position')).toHaveLength(3);
   });
 
   it('should hide GoalKeeper section when there are no goalkeepers', async () => {
@@ -147,6 +148,7 @@ describe('NextEventPage', () => {
     expect(await screen.findByText('Junior')).toBeTruthy();
     expect(await screen.findByText('Lidya')).toBeTruthy();
     expect(await screen.findByText('Mateus')).toBeTruthy();
+    expect(await screen.findAllByTestId('player_position')).toHaveLength(3);
   });
 
   it('should hide Players section when there are no players', async () => {
@@ -183,6 +185,7 @@ describe('NextEventPage', () => {
     expect(await screen.findByText('2')).toBeTruthy();
     expect(await screen.findByText('Lidya')).toBeTruthy();
     expect(await screen.findByText('Mateus')).toBeTruthy();
+    expect(await screen.findAllByTestId('player_position')).toHaveLength(2);
   });
 
   it('should hide out section when there are no out', async () => {
@@ -219,6 +222,7 @@ describe('NextEventPage', () => {
     expect(await screen.findByText('2')).toBeTruthy();
     expect(await screen.findByText('Lidya')).toBeTruthy();
     expect(await screen.findByText('Mateus')).toBeTruthy();
+    expect(await screen.findAllByTestId('player_position')).toHaveLength(2);
   });
 
   it('should hide doubt section when there are no doubt', async () => {
