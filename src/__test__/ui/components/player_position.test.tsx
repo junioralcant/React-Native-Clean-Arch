@@ -1,22 +1,10 @@
 import {render, screen} from '@testing-library/react-native';
 import React from 'react';
 import {expect, it, describe} from '@jest/globals';
-import {Text} from 'react-native';
+import {PlayerPosition} from '../../../ui/components/PlayerPosition';
 
 const sut = ({position = 'goalkeeper'}: {position?: string}) => {
   render(<PlayerPosition position={position} />);
-};
-
-const PlayerPosition = ({position}: {position?: string}) => {
-  const getPositionText = () => {
-    if (position === 'goalkeeper') return 'Goleiro';
-    if (position === 'defender') return 'Zagueiro';
-    if (position === 'midfielder') return 'Meia';
-    if (position === 'forward') return 'Atacante';
-    return 'Gandula';
-  };
-
-  return <Text>{getPositionText()}</Text>;
 };
 
 describe('PlayerPosition', () => {
