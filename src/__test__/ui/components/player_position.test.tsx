@@ -12,6 +12,7 @@ const PlayerPosition = ({position}: {position?: string}) => {
     if (position === 'goalkeeper') return 'Goleiro';
     if (position === 'defender') return 'Zagueiro';
     if (position === 'midfielder') return 'Meia';
+    if (position === 'forward') return 'Atacante';
     return 'Gandula';
   };
 
@@ -37,5 +38,10 @@ describe('PlayerPosition', () => {
   it('should handle midfielder position', () => {
     sut({position: 'midfielder'});
     expect(screen.getByText('Meia')).toBeTruthy();
+  });
+
+  it('should handle forward position', () => {
+    sut({position: 'forward'});
+    expect(screen.getByText('Atacante')).toBeTruthy();
   });
 });
