@@ -8,8 +8,13 @@ const sut = ({position = 'goalkeeper'}: {position?: string}) => {
 };
 
 const PlayerPosition = ({position}: {position?: string}) => {
-  const positionText = position === 'goalkeeper' ? 'Goleiro' : 'Gandula';
-  return <Text>{positionText}</Text>;
+  const getPositionText = () => {
+    if (position === 'goalkeeper') return 'Goleiro';
+    if (position === 'defender') return 'Zagueiro';
+    return 'Gandula';
+  };
+
+  return <Text>{getPositionText()}</Text>;
 };
 
 describe('PlayerPosition', () => {
@@ -21,5 +26,10 @@ describe('PlayerPosition', () => {
   it('should handle positionless', () => {
     sut({position: ''});
     expect(screen.getByText('Gandula')).toBeTruthy();
+  });
+
+  it('should handle defender position', () => {
+    sut({position: 'defender'});
+    expect(screen.getByText('Zagueiro')).toBeTruthy();
   });
 });
