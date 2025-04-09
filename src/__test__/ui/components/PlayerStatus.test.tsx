@@ -11,7 +11,11 @@ const PlayerStatus = ({isConfirmed}: PlayerStatusProps) => {
   return (
     <View
       testID="player_status"
-      style={{width: 10, height: 10, backgroundColor: 'green'}}
+      style={{
+        width: 10,
+        height: 10,
+        backgroundColor: isConfirmed ? 'green' : 'red',
+      }}
     />
   );
 };
@@ -24,6 +28,13 @@ describe('PlayerStatus', () => {
     sut();
     expect(screen.getByTestId('player_status')).toHaveStyle({
       backgroundColor: 'green',
+    });
+  });
+
+  it('should present red status when is confirmed is false', () => {
+    sut({isConfirmed: false});
+    expect(screen.getByTestId('player_status')).toHaveStyle({
+      backgroundColor: 'red',
     });
   });
 });
