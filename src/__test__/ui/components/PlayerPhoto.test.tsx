@@ -18,7 +18,7 @@ describe('PlayerStatus', () => {
   it('should not present initials when photo is provided', () => {
     sut({photo: 'https://via.placeholder.com/150'});
     expect(screen.queryByText('AB')).toBeFalsy();
-    expect(screen.getByTestId('player_photo').props.source.uri).toBe(
+    expect(screen.getByTestId('icon_photo').props.source.uri).toBe(
       'https://via.placeholder.com/150',
     );
   });

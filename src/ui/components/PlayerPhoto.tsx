@@ -1,4 +1,4 @@
-import {Text, Image} from 'react-native';
+import {Text, Image, View} from 'react-native';
 
 export type PlayerPhotoProps = {
   initials: string;
@@ -9,9 +9,13 @@ export const PlayerPhoto = ({
   initials = '',
   photo = '',
 }: Partial<PlayerPhotoProps> = {}) => {
-  return !photo ? (
-    <Text>{initials}</Text>
-  ) : (
-    <Image testID="player_photo" source={{uri: photo}} />
+  return (
+    <View testID="player_photo">
+      {photo ? (
+        <Image testID="icon_photo" source={{uri: photo}} />
+      ) : (
+        <Text>{initials}</Text>
+      )}
+    </View>
   );
 };

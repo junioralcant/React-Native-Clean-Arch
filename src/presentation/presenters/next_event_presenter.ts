@@ -29,9 +29,27 @@ export class NextEventViewModel {
 export class NextEventPlayerViewModel {
   name: string;
   position: string;
+  photo: string | null;
+  initials: string;
+  isConfirmed: boolean;
 
-  constructor({name, position}: {name: string; position?: string}) {
+  constructor({
+    name,
+    position,
+    photo,
+    initials,
+    isConfirmed,
+  }: {
+    name: string;
+    position?: string;
+    photo?: string;
+    initials?: string;
+    isConfirmed?: boolean;
+  }) {
     this.name = name;
     this.position = position ?? '';
+    this.photo = photo ?? null;
+    this.initials = initials ?? '';
+    this.isConfirmed = isConfirmed ?? false;
   }
 }
