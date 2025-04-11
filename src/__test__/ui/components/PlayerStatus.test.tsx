@@ -1,30 +1,10 @@
 import '@testing-library/jest-native/extend-expect';
 import {expect, it, describe} from '@jest/globals';
 import {render, screen} from '@testing-library/react-native';
-import {View} from 'react-native';
-
-type PlayerStatusProps = {
-  isConfirmed: boolean | null;
-};
-
-const PlayerStatus = ({isConfirmed}: PlayerStatusProps) => {
-  const getBackgroundColor = () => {
-    if (isConfirmed === null) return 'grey';
-    if (isConfirmed) return 'green';
-    return 'red';
-  };
-
-  return (
-    <View
-      testID="player_status"
-      style={{
-        width: 10,
-        height: 10,
-        backgroundColor: getBackgroundColor(),
-      }}
-    />
-  );
-};
+import {
+  PlayerStatus,
+  PlayerStatusProps,
+} from '../../../ui/components/PlayerStatus';
 
 const sut = ({isConfirmed = true}: Partial<PlayerStatusProps> = {}) =>
   render(<PlayerStatus isConfirmed={isConfirmed} />);
