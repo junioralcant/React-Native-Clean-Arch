@@ -1,23 +1,10 @@
 import '@testing-library/jest-native/extend-expect';
 import {expect, it, describe} from '@jest/globals';
 import {render, screen} from '@testing-library/react-native';
-import {Image, Text} from 'react-native';
-
-type PlayerPhotoProps = {
-  initials: string;
-  photo: string | null;
-};
-
-export const PlayerPhoto = ({
-  initials = '',
-  photo = '',
-}: Partial<PlayerPhotoProps> = {}) => {
-  return !photo ? (
-    <Text>{initials}</Text>
-  ) : (
-    <Image testID="player_photo" source={{uri: photo}} />
-  );
-};
+import {
+  PlayerPhotoProps,
+  PlayerPhoto,
+} from '../../../ui/components/PlayerPhoto';
 
 const sut = ({initials = '', photo = ''}: Partial<PlayerPhotoProps> = {}) =>
   render(<PlayerPhoto initials={initials} photo={photo} />);
