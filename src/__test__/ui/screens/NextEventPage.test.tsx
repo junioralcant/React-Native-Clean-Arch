@@ -246,4 +246,22 @@ describe('NextEventPage', () => {
       expect(screen.queryByText('DÚVIDA')).toBeFalsy();
     });
   });
+
+  it('should present error message when data is load error', async () => {
+    const presenter = new NextEventPresenterSpy();
+    presenter.loadNextEvent = async () => {
+      throw new Error();
+    };
+
+    sut({presenter});
+    expect(screen.getByTestId('spinner')).toBeTruthy();
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('spinner')).toBeFalsy();
+      expect(screen.getByTestId('error')).toBeTruthy();
+      expect(
+        screen.getByText('Algo de errado aconteceu, tente novamente!'),
+      ).toBeTruthy();
+    });
+  });
 });

@@ -66,7 +66,11 @@ export const NextEventPage = ({presenter, groupId}: NextEventPageProps) => {
       return <Text testID="spinner">loading...</Text>;
     }
     if (error) {
-      return <Text testID="error">error</Text>;
+      return (
+        <View testID="error">
+          <Text>Algo de errado aconteceu, tente novamente!</Text>
+        </View>
+      );
     }
     return (
       <View>
