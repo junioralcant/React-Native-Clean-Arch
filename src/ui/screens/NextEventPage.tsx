@@ -62,7 +62,9 @@ export const NextEventPage = ({presenter, groupId}: NextEventPageProps) => {
   }, []);
 
   const handleReload = async () => {
+    setIsLoading(true);
     await presenter.reload(groupId);
+    setIsLoading(false);
   };
 
   const renderContent = () => {

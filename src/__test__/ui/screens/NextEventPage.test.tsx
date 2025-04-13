@@ -292,4 +292,24 @@ describe('NextEventPage', () => {
     expect(presenter.reloadCallsCount).toBe(1);
     expect(presenter.groupId).toBe(groupId);
   });
+
+  it('should show spinner when on reload click', async () => {
+    const presenter = new NextEventPresenterSpy();
+    presenter.loadNextEvent = async () => {
+      throw new Error();
+    };
+    const groupId = anyString();
+
+    sut({presenter, groupId});
+
+    await waitFor(() => screen.getByTestId('error'));
+
+    fireEvent.press(screen.getByTestId('reload'));
+
+    expect(screen.getByTestId('spinner')).toBeTruthy();
+
+    await waitFor(() => screen.getByTestId('error'));
+
+    expect(screen.queryByTestId('spinner')).toBeFalsy();
+  });
 });
