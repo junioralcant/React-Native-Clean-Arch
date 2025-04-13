@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Text, View} from 'react-native';
+import {Button, Text, View} from 'react-native';
 import {
   INextEventPresenter,
   NextEventPlayerViewModel,
@@ -61,14 +61,20 @@ export const NextEventPage = ({presenter, groupId}: NextEventPageProps) => {
     loadingLoadNextEvent();
   }, []);
 
+  const handleReload = async () => {
+    await presenter.reload(groupId);
+  };
+
   const renderContent = () => {
     if (isLoading) {
       return <Text testID="spinner">loading...</Text>;
     }
+
     if (error) {
       return (
         <View testID="error">
           <Text>Algo de errado aconteceu, tente novamente!</Text>
+          <Button testID="reload" title="Recarregar" onPress={handleReload} />
         </View>
       );
     }

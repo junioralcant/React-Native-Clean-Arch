@@ -1,5 +1,10 @@
 import {expect, it, describe} from '@jest/globals';
-import {render, screen, waitFor} from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
 
 import {
   INextEventPresenter,
@@ -14,6 +19,7 @@ import {
 
 class NextEventPresenterSpy implements INextEventPresenter {
   loadCallsCount = 0;
+  reloadCallsCount = 0;
   groupId = '';
   response: NextEventViewModel = {
     goalKeepers: [],
@@ -30,6 +36,11 @@ class NextEventPresenterSpy implements INextEventPresenter {
     this.loadCallsCount++;
     this.groupId = groupId;
     return this.response;
+  };
+
+  reload = async (groupId: string) => {
+    this.reloadCallsCount++;
+    this.groupId = groupId;
   };
 }
 
@@ -263,5 +274,22 @@ describe('NextEventPage', () => {
         screen.getByText('Algo de errado aconteceu, tente novamente!'),
       ).toBeTruthy();
     });
+  });
+
+  it('should load event data on reload click', async () => {
+    const presenter = new NextEventPresenterSpy();
+    presenter.loadNextEvent = async () => {
+      throw new Error();
+    };
+    const groupId = anyString();
+
+    sut({presenter, groupId});
+
+    await waitFor(() => screen.getByTestId('error'));
+
+    fireEvent.press(screen.getByTestId('reload'));
+
+    expect(presenter.reloadCallsCount).toBe(1);
+    expect(presenter.groupId).toBe(groupId);
   });
 });
