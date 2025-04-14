@@ -283,19 +283,27 @@ describe('NextEventPage', () => {
 
   it('should load event data on reload click', async () => {
     const presenter = new NextEventPresenterSpy();
-    presenter.loadNextEvent = async () => {
+    const originalLoadNextEvent = presenter.loadNextEvent.bind(presenter);
+    presenter.loadNextEvent = async params => {
+      await originalLoadNextEvent(params);
       throw new Error();
     };
+
     const groupId = anyString();
 
     sut({presenter, groupId});
 
     await waitFor(() => screen.getByTestId('error'));
 
+    expect(presenter.loadCallsCount).toBe(1);
+    expect(presenter.groupId).toBe(groupId);
+    expect(presenter.isReload).toBe(false);
+
     fireEvent.press(screen.getByTestId('reload'));
 
-    expect(presenter.reloadCallsCount).toBe(1);
+    expect(presenter.loadCallsCount).toBe(2);
     expect(presenter.groupId).toBe(groupId);
+    expect(presenter.isReload).toBe(true);
   });
 
   it('should show spinner when on reload click', async () => {

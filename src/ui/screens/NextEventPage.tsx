@@ -45,26 +45,24 @@ export const NextEventPage = ({presenter, groupId}: NextEventPageProps) => {
   const [error, setError] = useState(false);
   const [nextEvent, setNextEvent] = useState<NextEventViewModel | undefined>();
 
-  useEffect(() => {
-    const loadingLoadNextEvent = async () => {
-      try {
-        setIsLoading(true);
-        const response = await presenter.loadNextEvent({groupId});
-        setNextEvent(response);
-      } catch (error) {
-        setError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const loadingLoadNextEvent = async (isReload = false) => {
+    try {
+      setIsLoading(true);
+      const response = await presenter.loadNextEvent({groupId, isReload});
+      setNextEvent(response);
+    } catch (error) {
+      setError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     loadingLoadNextEvent();
   }, []);
 
   const handleReload = async () => {
-    setIsLoading(true);
-    await presenter.reload(groupId);
-    setIsLoading(false);
+    loadingLoadNextEvent(true);
   };
 
   const renderContent = () => {
