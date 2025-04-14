@@ -21,6 +21,7 @@ class NextEventPresenterSpy implements INextEventPresenter {
   loadCallsCount = 0;
   reloadCallsCount = 0;
   groupId = '';
+  isReload = false;
   response: NextEventViewModel = {
     goalKeepers: [],
     players: [],
@@ -30,11 +31,14 @@ class NextEventPresenterSpy implements INextEventPresenter {
 
   loadNextEvent = async ({
     groupId,
+    isReload = false,
   }: {
     groupId: string;
+    isReload?: boolean;
   }): Promise<NextEventViewModel> => {
     this.loadCallsCount++;
     this.groupId = groupId;
+    this.isReload = isReload;
     return this.response;
   };
 
@@ -60,6 +64,7 @@ describe('NextEventPage', () => {
 
     expect(presenter.loadCallsCount).toBe(1);
     expect(presenter.groupId).toBe(groupId);
+    expect(presenter.isReload).toBe(false);
 
     await waitFor(() => screen.getByTestId('spinner'));
   });
