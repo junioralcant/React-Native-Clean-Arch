@@ -6,7 +6,6 @@ export interface INextEventPresenter {
     groupId: string;
     isReload?: boolean;
   }) => Promise<NextEventViewModel>;
-  reload: (groupId: string) => Promise<void>;
 }
 
 export class NextEventViewModel {

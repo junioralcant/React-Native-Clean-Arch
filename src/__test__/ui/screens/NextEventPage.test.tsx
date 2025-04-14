@@ -19,7 +19,6 @@ import {
 
 class NextEventPresenterSpy implements INextEventPresenter {
   loadCallsCount = 0;
-  reloadCallsCount = 0;
   groupId = '';
   isReload = false;
   response: NextEventViewModel = {
@@ -40,11 +39,6 @@ class NextEventPresenterSpy implements INextEventPresenter {
     this.groupId = groupId;
     this.isReload = isReload;
     return this.response;
-  };
-
-  reload = async (groupId: string) => {
-    this.reloadCallsCount++;
-    this.groupId = groupId;
   };
 }
 
