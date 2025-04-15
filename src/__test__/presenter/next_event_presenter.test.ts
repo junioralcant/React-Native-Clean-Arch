@@ -137,4 +137,30 @@ describe('NextEventPresenter', () => {
     expect(response.doubt[2].name).toBe('Carla Doe');
     expect(response.doubt[3].name).toBe('Diana Doe');
   });
+
+  it('should return doubt with correct data', async () => {
+    const groupId = anyString();
+    const nextEventLoadedUseCaseSpy = new NextEventLoadedUseCaseSpy();
+    const player = NextEventPlayerEntity.create({
+      id: '1',
+      name: 'Bia Doe',
+      isConfirmed: true,
+      photo: 'https://example.com/photo.jpg',
+      position: 'Goalkeeper',
+    });
+    nextEventLoadedUseCaseSpy.response = {
+      groupName: 'test',
+      date: new Date(),
+      players: [player],
+    };
+
+    const {sut} = makeSut({nextEventLoadedUseCaseSpy});
+    const response = await sut.loadNextEvent({groupId});
+
+    expect(response.doubt[0].name).toBe('Bia Doe');
+    expect(response.doubt[0].isConfirmed).toBe(true);
+    expect(response.doubt[0].initials).toBe('BD');
+    expect(response.doubt[0].photo).toBe('https://example.com/photo.jpg');
+    expect(response.doubt[0].position).toBe('Goalkeeper');
+  });
 });
