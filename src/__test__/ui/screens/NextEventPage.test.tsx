@@ -7,7 +7,6 @@ import {
 } from '@testing-library/react-native';
 
 import {
-  INextEventPresenter,
   NextEventPlayerViewModel,
   NextEventViewModel,
 } from '../../../presentation/presenters/next_event_presenter';
@@ -16,31 +15,7 @@ import {
   NextEventPage,
   NextEventPageProps,
 } from '../../../ui/screens/NextEventPage';
-
-class NextEventPresenterSpy implements INextEventPresenter {
-  loadCallsCount = 0;
-  groupId = '';
-  isReload = false;
-  response: NextEventViewModel = {
-    goalKeepers: [],
-    players: [],
-    out: [],
-    doubt: [],
-  } as NextEventViewModel;
-
-  loadNextEvent = async ({
-    groupId,
-    isReload = false,
-  }: {
-    groupId: string;
-    isReload?: boolean;
-  }): Promise<NextEventViewModel> => {
-    this.loadCallsCount++;
-    this.groupId = groupId;
-    this.isReload = isReload;
-    return this.response;
-  };
-}
+import {NextEventPresenterSpy} from '../../presenter/mocks/next_event_presenter_spy';
 
 const sut = ({
   presenter = new NextEventPresenterSpy(),
