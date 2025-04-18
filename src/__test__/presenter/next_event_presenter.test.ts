@@ -32,8 +32,14 @@ class NextEventPresenter implements INextEventPresenter {
         .map(this.mapPlayersToViewModel)
         .sort((a, b) => a.name.localeCompare(b.name)),
       goalKeepers: [],
+      out: event.players
+        .filter(player => player.confirmationDate && !player.isConfirmed)
+        .map(this.mapPlayersToViewModel)
+        .sort(
+          (a, b) =>
+            a.confirmationDate?.getTime()! - b.confirmationDate?.getTime()!,
+        ),
       players: [],
-      out: [],
     };
   }
 
@@ -46,6 +52,7 @@ class NextEventPresenter implements INextEventPresenter {
       photo: player.photo,
       initials: player.initials,
       isConfirmed: player.isConfirmed,
+      confirmationDate: player.confirmationDate,
     });
   }
 }
@@ -162,5 +169,49 @@ describe('NextEventPresenter', () => {
     expect(response.doubt[0].initials).toBe('BD');
     expect(response.doubt[0].photo).toBe('https://example.com/photo.jpg');
     expect(response.doubt[0].position).toBe('Goalkeeper');
+  });
+
+  it('should return out list sorted by confirmation date', async () => {
+    const groupId = anyString();
+    const nextEventLoadedUseCaseSpy = new NextEventLoadedUseCaseSpy();
+    nextEventLoadedUseCaseSpy.response = {
+      groupName: 'test',
+      date: new Date(),
+      players: [
+        NextEventPlayerEntity.create({
+          id: '1',
+          name: 'Bia Doe',
+          isConfirmed: false,
+          photo: 'https://example.com/photo.jpg',
+          position: 'Goalkeeper',
+          confirmationDate: new Date('2025-04-18T12:00:00'),
+        }),
+        NextEventPlayerEntity.create({
+          id: '2',
+          name: 'Ana Doe',
+          isConfirmed: false,
+          confirmationDate: new Date('2025-04-18T13:00:00'),
+        }),
+        NextEventPlayerEntity.create({
+          id: '2',
+          name: 'Ana Doe',
+          isConfirmed: false,
+          confirmationDate: new Date('2025-04-18T11:00:00'),
+        }),
+        NextEventPlayerEntity.create({
+          id: '3',
+          name: 'Carla Doe',
+          isConfirmed: false,
+          confirmationDate: new Date('2025-04-18T10:00:00'),
+        }),
+      ],
+    };
+
+    const {sut} = makeSut({nextEventLoadedUseCaseSpy});
+    const response = await sut.loadNextEvent({groupId});
+
+    expect(response.out[0].name).toBe('Carla Doe');
+    expect(response.out[1].name).toBe('Ana Doe');
+    expect(response.out[2].name).toBe('Bia Doe');
   });
 });
