@@ -53,11 +53,13 @@ app.get('/api/groups/:groupId/next_event', (req, res) => {
         id: '7',
         name: 'Zé Ninguém',
         isConfirmed: false,
+        confirmationDate: '2024-01-10T14:10:00.000Z',
       },
       {
         id: '8',
         name: 'Rodrigo Manguinho',
         isConfirmed: false,
+        confirmationDate: '2024-01-10T14:10:00.000Z',
       },
       {
         id: '9',

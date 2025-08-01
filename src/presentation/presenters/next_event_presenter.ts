@@ -81,6 +81,7 @@ export class NextEventPresenter implements INextEventPresenter {
     isReload?: boolean;
   }): Promise<NextEventViewModel> {
     const response = await this.nextEventLoadedUseCase.execute({groupId});
+
     return this.mapEventToViewModel(response);
   }
 

@@ -9,6 +9,8 @@ export function toNextEventPlayerEntity(
     isConfirmed: player.isConfirmed,
     photo: player.photo,
     position: player.position,
-    confirmationDate: player?.confirmationDate,
+    confirmationDate: player.confirmationDate
+      ? new Date(player.confirmationDate)
+      : undefined,
   });
 }

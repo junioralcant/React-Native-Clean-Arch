@@ -55,8 +55,10 @@ describe('LoadNextEventApiRepository', () => {
     expect(event.players[1].name).toBe('name 2');
     expect(event.players[1].position).toBe('position 2');
     expect(event.players[1].photo).toBe('photo 2');
-    expect(event.players[1].confirmationDate).toBe('2024-01-01T10:30');
 
+    expect(event.players[1].confirmationDate?.toISOString()).toBe(
+      '2024-01-01T13:30:00.000Z',
+    );
     expect(event.players[1].isConfirmed).toBe(false);
   });
 

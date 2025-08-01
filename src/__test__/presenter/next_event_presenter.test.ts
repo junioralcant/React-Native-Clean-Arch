@@ -122,6 +122,7 @@ describe('NextEventPresenter', () => {
   it('should return out list sorted by confirmation date', async () => {
     const groupId = anyString();
     const nextEventLoadedUseCaseSpy = new NextEventLoadedUseCaseSpy();
+
     nextEventLoadedUseCaseSpy.response = {
       groupName: 'test',
       date: new Date(),
