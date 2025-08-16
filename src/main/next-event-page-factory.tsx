@@ -10,8 +10,9 @@ export const makeNextEventPage = () => {
   const httpClient = new HttpAdapter(httpClientAxios);
   const repo = new LoadNextEventApiRepository(
     httpClient,
-    'http://localhost:3000/api/groups/:groupId/next_event',
+    'http://10.0.2.2:3000/api/groups/:groupId/next_event',
   );
+
   const nextEventLoadedUseCase = new NextEventLoaderUseCase(repo);
   const presenter = new NextEventPresenter(nextEventLoadedUseCase);
   return <NextEventPage presenter={presenter} groupId="1" />;
