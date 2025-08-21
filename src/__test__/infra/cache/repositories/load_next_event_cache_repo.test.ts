@@ -1,34 +1,12 @@
 import {expect, it, describe, beforeEach} from '@jest/globals';
 import {anyString} from '../../../helpers/fakes';
 import {NextEventEntity} from '../../../../domain/entities/next_event_';
-import {NextEventPlayerEntity} from '../../../../domain/entities/next_event_player';
 import {Json} from '../../../../infra/types/json';
-import { CacheGetClientSpy, ICacheGetClient } from '../../../../infra/cache/clients/cache_get_client';
-
-
-
-export function toNextEventEntity(response: Json): NextEventEntity {
-  return new NextEventEntity({
-    date: response.date,
-    groupName: response.groupName,
-    players: response.players.map(toNextEventPlayerEntity),
-  });
-}
-
-export function toNextEventPlayerEntity(
-  player: NextEventPlayerEntity,
-): NextEventPlayerEntity {
-  return NextEventPlayerEntity.create({
-    id: player.id,
-    name: player.name,
-    isConfirmed: player.isConfirmed,
-    photo: player.photo,
-    position: player.position,
-    confirmationDate: player.confirmationDate
-      ? new Date(player.confirmationDate)
-      : undefined,
-  });
-}
+import {
+  CacheGetClientSpy,
+  ICacheGetClient,
+} from '../../../../infra/cache/clients/cache_get_client';
+import {toNextEventEntity} from '../../../../infra/api/adapters/next_event_adapter';
 
 type loadNextEventParams = {groupId: string};
 
