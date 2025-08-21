@@ -1,30 +1,7 @@
 import {expect, it, describe, beforeEach} from '@jest/globals';
 import {anyString} from '../../../helpers/fakes';
-import {NextEventEntity} from '../../../../domain/entities/next_event_';
-import {Json} from '../../../../infra/types/json';
-import {
-  CacheGetClientSpy,
-  ICacheGetClient,
-} from '../../../../infra/cache/clients/cache_get_client';
-import {toNextEventEntity} from '../../../../infra/api/adapters/next_event_adapter';
-
-type loadNextEventParams = {groupId: string};
-
-export class LoadNextEventCacheRepository {
-  constructor(
-    private readonly cacheClient: ICacheGetClient,
-    private readonly key: string,
-  ) {}
-  async loadNextEvent({
-    groupId,
-  }: loadNextEventParams): Promise<NextEventEntity> {
-    const response = await this.cacheClient.get<Json>({
-      key: `${this.key}:${groupId}`,
-    });
-
-    return toNextEventEntity(response);
-  }
-}
+import {CacheGetClientSpy} from '../../../../infra/cache/clients/cache_get_client';
+import {LoadNextEventCacheRepository} from '../../../../infra/cache/repositories/load_next_event_cache_repo';
 
 describe('LoadNextEventCacheRepository', () => {
   let groupId: string;
