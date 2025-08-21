@@ -1,11 +1,5 @@
-export type GetParams = {
-    key: string;
-  };
-  
-  export interface ICacheGetClient {
-    get<T>(params: GetParams): Promise<T>;
-  }
-  
+import { GetParams, ICacheGetClient } from "../../../../infra/cache/contracts/client";
+
   export class CacheGetClientSpy implements ICacheGetClient {
     key? = '';
     callsCount = 0;

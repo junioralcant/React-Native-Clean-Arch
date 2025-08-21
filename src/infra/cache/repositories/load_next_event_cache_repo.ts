@@ -1,7 +1,8 @@
 import {NextEventEntity} from '../../../domain/entities/next_event_';
 import {Json} from '../../types/json';
 import {toNextEventEntity} from '../clients/adapters/next_event_adapter';
-import {ICacheGetClient} from '../clients/cache_get_client';
+import { ICacheGetClient } from '../contracts/client';
+
 
 type loadNextEventParams = {groupId: string};
 

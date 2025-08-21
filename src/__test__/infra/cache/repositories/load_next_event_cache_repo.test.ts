@@ -1,6 +1,6 @@
 import {expect, it, describe, beforeEach} from '@jest/globals';
 import {anyString} from '../../../helpers/fakes';
-import {CacheGetClientSpy} from '../../../../infra/cache/clients/cache_get_client';
+import {CacheGetClientSpy} from '../clients/cache_get_client_spy';
 import {LoadNextEventCacheRepository} from '../../../../infra/cache/repositories/load_next_event_cache_repo';
 
 describe('LoadNextEventCacheRepository', () => {
