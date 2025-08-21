@@ -16,9 +16,11 @@ export class CacheGetClientSpy implements ICacheGetClient {
   key? = '';
   callsCount = 0;
   response: any = {};
+  error?: Error;
   async get<T>(params: GetParams): Promise<T> {
     this.key = params?.key;
     this.callsCount++;
+    if (this.error) throw this.error;
     return this.response;
   }
 }
@@ -120,5 +122,12 @@ describe('LoadNextEventCacheRepository', () => {
       new Date('2024-01-01T10:30'),
     );
     expect(event.players[1].isConfirmed).toBe(false);
+  });
+
+  it('should rethrow on error', async () => {
+    const error = new Error('error');
+    cacheClient.error = error;
+    const response = sut.loadNextEvent({groupId});
+    expect(response).rejects.toThrow(error);
   });
 });
