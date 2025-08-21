@@ -3,27 +3,9 @@ import {anyString} from '../../../helpers/fakes';
 import {NextEventEntity} from '../../../../domain/entities/next_event_';
 import {NextEventPlayerEntity} from '../../../../domain/entities/next_event_player';
 import {Json} from '../../../../infra/types/json';
+import { CacheGetClientSpy, ICacheGetClient } from '../../../../infra/cache/clients/cache_get_client';
 
-export type GetParams = {
-  key: string;
-};
 
-export interface ICacheGetClient {
-  get<T>(params: GetParams): Promise<T>;
-}
-
-export class CacheGetClientSpy implements ICacheGetClient {
-  key? = '';
-  callsCount = 0;
-  response: any = {};
-  error?: Error;
-  async get<T>(params: GetParams): Promise<T> {
-    this.key = params?.key;
-    this.callsCount++;
-    if (this.error) throw this.error;
-    return this.response;
-  }
-}
 
 export function toNextEventEntity(response: Json): NextEventEntity {
   return new NextEventEntity({
